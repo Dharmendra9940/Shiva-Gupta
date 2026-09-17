@@ -1,0 +1,2342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>S6 ERP Business Suite</title>
+  <!-- Bootstrap 5 CSS & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+
+  <style>
+    :root {
+      --app-font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: var(--app-font);
+      background-color: #121212;
+      color: #333;
+    }
+
+    /* Screen Management */
+    .screen {
+      display: none;
+      min-height: 100vh;
+      width: 100%;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      position: relative;
+      padding: 20px 15px 70px 15px;
+    }
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Background Images */
+    #welcomeScreen {
+      background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+        url('https://images.unsplash.com/photo-1567591974584-f1832dfaad58?auto=format&fit=crop&w=1920&q=80');
+    }
+    #s6OperationScreen {
+      background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+        url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1920&q=80');
+    }
+    #itemDetailsScreen {
+      background-image: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), 
+        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80');
+    }
+    #supplierDetailsScreen {
+      background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+        url('https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=1920&q=80');
+    }
+    #clientDetailsScreen {
+      background-image: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), 
+        url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1920&q=80');
+    }
+    #expenseDetailsScreen {
+      background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+        url('https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=80');
+    }
+    #receivedDetailsScreen {
+      background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+        url('https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1920&q=80');
+    }
+    #optionsScreen {
+      background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+        url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1920&q=80');
+    }
+    #salesmanDetailsScreen {
+      background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+        url('https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1920&q=80');
+    }
+    #billingDetailsScreen {
+      background-image: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), 
+        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80');
+    }
+    #reportScreen {
+      background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+        url('https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1920&q=80');
+    }
+
+    /* Modern Glassmorphic Cards */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+      width: 100%;
+      max-width: 600px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .glass-card-lg {
+      max-width: 900px;
+    }
+
+    /* Menu Grid Buttons */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 15px;
+      width: 100%;
+      margin-top: 15px;
+    }
+    .btn-menu {
+      padding: 14px 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+    }
+    .btn-menu:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+    }
+    .btn-menu:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      color: #e0e0e0;
+      font-size: 0.85rem;
+    }
+
+    /* Custom Tables */
+    .table-responsive {
+      max-height: 280px;
+      overflow-y: auto;
+      border-radius: 8px;
+    }
+    .table th {
+      background-color: #212529 !important;
+      color: white !important;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    /* Print styling */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printArea, #printArea * {
+        visibility: visible;
+      }
+      #printArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= 1. WELCOME SCREEN ================= -->
+  <div id="welcomeScreen" class="screen active">
+    <div class="glass-card text-center">
+      <h2 class="fw-bold mb-1 text-primary">S6 Business Portal</h2>
+      <p class="text-muted small mb-4">Enterprise Resource Management System</p>
+      <form id="welcomeForm" onsubmit="event.preventDefault(); handleLogin();">
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="loginUser" placeholder="User Name" required />
+          <label for="loginUser"><i class="bi bi-person me-1"></i>User Name</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input type="password" class="form-control" id="loginPass" placeholder="Password" required />
+          <label for="loginPass"><i class="bi bi-shield-lock me-1"></i>Password</label>
+        </div>
+        <div id="loginError" class="alert alert-danger py-2 d-none small">Wrong Password</div>
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold shadow-sm">Submit & Enter</button>
+      </form>
+    </div>
+    <div class="footer">Developed By: Mr.Shiva Gupta, Contact No:9336459940 </div>
+  </div>
+
+  <!-- ================= 2. S6 OPERATION PAGE ================= -->
+  <div id="s6OperationScreen" class="screen">
+    <div class="glass-card glass-card-lg text-center">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold m-0 text-dark">S6 Operation Center</h3>
+        <span class="badge bg-primary px-3 py-2" id="roleBadge">Role: Admin</span>
+      </div>
+      <p class="text-muted small">Select an operational module from the control panel below</p>
+      
+      <div class="menu-grid">
+        <button class="btn btn-primary btn-menu" onclick="navTo('itemDetailsScreen')">
+          <i class="bi bi-box-seam fs-4"></i>Item
+        </button>
+        <button class="btn btn-success btn-menu" onclick="navTo('supplierDetailsScreen')">
+          <i class="bi bi-truck fs-4"></i>Supplier
+        </button>
+        <button class="btn btn-info btn-menu text-white" onclick="navTo('clientDetailsScreen')">
+          <i class="bi bi-people fs-4"></i>Clients
+        </button>
+        <button class="btn btn-warning btn-menu text-dark" onclick="navTo('expenseDetailsScreen')">
+          <i class="bi bi-cash-coin fs-4"></i>Expense
+        </button>
+        <button class="btn btn-secondary btn-menu" onclick="navTo('receivedDetailsScreen')">
+          <i class="bi bi-inbox fs-4"></i>Received
+        </button>
+        <button class="btn btn-dark btn-menu" onclick="navTo('optionsScreen')">
+          <i class="bi bi-gear fs-4"></i>Option
+        </button>
+        <button class="btn btn-primary btn-menu" style="background: #6f42c1;" onclick="navTo('billingDetailsScreen')">
+          <i class="bi bi-receipt-cutoff fs-4"></i>Billing
+        </button>
+        <button class="btn btn-success btn-menu" style="background: #20c997;" onclick="navTo('reportScreen')">
+          <i class="bi bi-bar-chart-line fs-4"></i>Report
+        </button>
+        <button class="btn btn-danger btn-menu" onclick="exitApp()">
+          <i class="bi bi-power fs-4"></i>Exit
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 3. ITEM DETAILS PAGE ================= -->
+  <div id="itemDetailsScreen" class="screen">
+    <div class="glass-card glass-card-lg text-center">
+      <h3 class="fw-bold mb-3 text-dark">Item Details Module</h3>
+      <div class="menu-grid">
+        <button class="btn btn-primary btn-menu" onclick="openModal('newItemEntryModal')"><i class="bi bi-plus-circle fs-4"></i>New Entry</button>
+        <button class="btn btn-warning btn-menu mod-btn" onclick="openItemModifyModal()"><i class="bi bi-pencil-square fs-4"></i>Modify</button>
+        <button class="btn btn-info btn-menu text-white" onclick="openModal('itemSearchModal')"><i class="bi bi-search fs-4"></i>Searching</button>
+        <button class="btn btn-secondary btn-menu" onclick="showAllItemList()"><i class="bi bi-list-check fs-4"></i>All List</button>
+        <button class="btn btn-success btn-menu" onclick="openModal('groupDiscountModal')"><i class="bi bi-tag fs-4"></i>Group Disc</button>
+        <button class="btn btn-dark btn-menu" onclick="openModal('stockSummaryModal')"><i class="bi bi-file-earmark-bar-graph fs-4"></i>Report</button>
+        <button class="btn btn-danger btn-menu" onclick="navTo('s6OperationScreen')"><i class="bi bi-arrow-left-circle fs-4"></i>Exit</button>
+      </div>
+      <div id="itemListOutput" class="mt-4 text-start d-none">
+        <h6 class="fw-bold text-dark">Item Directory</h6>
+        <div class="table-responsive bg-white rounded shadow-sm">
+          <table class="table table-bordered table-sm m-0" id="itemDirTable">
+            <thead><tr><th>Barcode</th><th>Item Name</th><th>Group</th><th>Company</th><th>Style</th><th>P.Rate</th><th>MRP</th><th>Qty</th><th>GST%</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 4. SUPPLIER DETAILS PAGE ================= -->
+  <div id="supplierDetailsScreen" class="screen">
+    <div class="glass-card glass-card-lg text-center">
+      <h3 class="fw-bold mb-3 text-dark">Supplier Details Module</h3>
+      <div class="menu-grid">
+        <button class="btn btn-primary btn-menu" onclick="openModal('newSupplierModal')"><i class="bi bi-person-plus fs-4"></i>New Entry</button>
+        <button class="btn btn-warning btn-menu mod-btn" onclick="openSupplierListModal()"><i class="bi bi-pencil-square fs-4"></i>Modify</button>
+        <button class="btn btn-info btn-menu text-white" onclick="openModal('supplierSaleSheetModal')"><i class="bi bi-receipt fs-4"></i>Sale Sheet</button>
+        <button class="btn btn-secondary btn-menu" onclick="openModal('itemStockListModal')"><i class="bi bi-boxes fs-4"></i>Item Stock</button>
+        <button class="btn btn-success btn-menu" onclick="displaySupplierBalanceList()"><i class="bi bi-wallet2 fs-4"></i>Balance</button>
+        <button class="btn btn-primary btn-menu" style="background:#0d6efd;" onclick="openModal('paymentEntryModal')"><i class="bi bi-cash fs-4"></i>Payment</button>
+        <button class="btn btn-info btn-menu text-white" onclick="openModal('listPaymentModal')"><i class="bi bi-list-stars fs-4"></i>Change</button>
+        <button class="btn btn-dark btn-menu" onclick="openModal('supplierLedgerModal')"><i class="bi bi-book fs-4"></i>Ledger</button>
+        <button class="btn btn-secondary btn-menu" onclick="openModal('supplierGroupStockModal')"><i class="bi bi-graph-up fs-4"></i>Group Stock</button>
+        <button class="btn btn-danger btn-menu" onclick="navTo('s6OperationScreen')"><i class="bi bi-arrow-left-circle fs-4"></i>Exit</button>
+      </div>
+      <div id="supplierBalanceOutput" class="mt-4 text-start d-none">
+        <h6 class="fw-bold text-dark">Supplier Balances</h6>
+        <div class="table-responsive bg-white rounded shadow-sm">
+          <table class="table table-bordered table-sm m-0" id="supplierBalanceTable">
+            <thead><tr><th>Supplier Name</th><th>Address</th><th>Amount (Opening Balance)</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 5. CLIENTS DETAILS PAGE ================= -->
+  <div id="clientDetailsScreen" class="screen">
+    <div class="glass-card glass-card-lg text-center">
+      <h3 class="fw-bold mb-3 text-dark">Client Management Module</h3>
+      <div class="menu-grid">
+        <button class="btn btn-primary btn-menu" onclick="openModal('newClientModal')"><i class="bi bi-person-plus-fill fs-4"></i>New Entry</button>
+        <button class="btn btn-warning btn-menu mod-btn" onclick="openClientListModal()"><i class="bi bi-pencil-square fs-4"></i>Modify</button>
+        <button class="btn btn-success btn-menu" onclick="openModal('receiptEntryModal')"><i class="bi bi-receipt fs-4"></i>Receipt</button>
+        <button class="btn btn-secondary btn-menu mod-btn" onclick="openReceiptListModal()"><i class="bi bi-list-task fs-4"></i>Rec. Mod</button>
+        <button class="btn btn-info btn-menu text-white" onclick="displayAllClientsList()"><i class="bi bi-people-fill fs-4"></i>All Clients</button>
+        <button class="btn btn-dark btn-menu" onclick="openModal('clientLedgerModal')"><i class="bi bi-journal-bookmark fs-4"></i>Ledger</button>
+        <button class="btn btn-success btn-menu" onclick="displayAllClientBalances()"><i class="bi bi-currency-rupee fs-4"></i>All Balance</button>
+        <button class="btn btn-primary btn-menu" onclick="openModal('clientBusinessModal')"><i class="bi bi-briefcase fs-4"></i>Business</button>
+        <button class="btn btn-warning btn-menu text-dark" onclick="openModal('clientOccasionModal')"><i class="bi bi-cake2 fs-4"></i>Occasion</button>
+        <button class="btn btn-danger btn-menu" onclick="navTo('s6OperationScreen')"><i class="bi bi-arrow-left-circle fs-4"></i>Exit</button>
+      </div>
+      <div id="clientDetailsOutput" class="mt-4 text-start d-none">
+        <h6 class="fw-bold text-dark" id="clientOutputHeading">Client Records</h6>
+        <div class="table-responsive bg-white rounded shadow-sm">
+          <table class="table table-bordered table-sm m-0" id="clientOutputTable">
+            <thead id="clientOutputHead"></thead>
+            <tbody id="clientOutputBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 6. EXPENSE DETAILS PAGE ================= -->
+  <div id="expenseDetailsScreen" class="screen">
+    <div class="glass-card text-center">
+      <h3 class="fw-bold mb-3 text-dark">Expense Management</h3>
+      <div class="menu-grid">
+        <button class="btn btn-primary btn-menu" onclick="openModal('expenseEntryModal')"><i class="bi bi-wallet-fill fs-4"></i>New Entry</button>
+        <button class="btn btn-warning btn-menu" onclick="openModal('groupExpenseModal')"><i class="bi bi-diagram-3 fs-4"></i>Modify</button>
+        <button class="btn btn-secondary btn-menu" onclick="openModal('allExpenseModal')"><i class="bi bi-file-text fs-4"></i>Report</button>
+        <button class="btn btn-danger btn-menu" onclick="navTo('s6OperationScreen')"><i class="bi bi-arrow-left-circle fs-4"></i>Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 7. RECEIVED DETAILS PAGE ================= -->
+  <div id="receivedDetailsScreen" class="screen">
+    <div class="glass-card glass-card-lg text-center">
+      <h3 class="fw-bold mb-3 text-dark">Received Inward Module</h3>
+      <div class="menu-grid">
+        <button class="btn btn-primary btn-menu" onclick="openReceivedItemModal()"><i class="bi bi-box-arrow-in-down fs-4"></i>New Entry</button>
+        <button class="btn btn-warning btn-menu" onclick="openModal('receivedItemModifyModal')"><i class="bi bi-pencil-square fs-4"></i>Modify</button>
+        <button class="btn btn-info btn-menu text-white" onclick="openModal('billWiseReceivedModal')"><i class="bi bi-receipt fs-4"></i>Summary</button>
+        <button class="btn btn-secondary btn-menu" onclick="openModal('purchaseReportModal')"><i class="bi bi-file-earmark-ruled fs-4"></i>Report</button>
+        <button class="btn btn-success btn-menu" onclick="openModal('purchaseFlowModal')"><i class="bi bi-shuffle fs-4"></i>Purchase Flow</button>
+        <button class="btn btn-danger btn-menu" onclick="navTo('s6OperationScreen')"><i class="bi bi-arrow-left-circle fs-4"></i>Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 8. OPTIONS PAGE ================= -->
+  <div id="optionsScreen" class="screen">
+    <div class="glass-card text-center">
+      <h3 class="fw-bold mb-3 text-dark">System Configurations</h3>
+      <div class="menu-grid">
+        <button class="btn btn-primary btn-menu" onclick="navTo('salesmanDetailsScreen')"><i class="bi bi-person-badge fs-4"></i>Salesman</button>
+        <button class="btn btn-success btn-menu" id="loginEntryBtn" onclick="openLoginEntryModal()"><i class="bi bi-key fs-4"></i>Login Entry</button>
+        <button class="btn btn-danger btn-menu" onclick="navTo('s6OperationScreen')"><i class="bi bi-arrow-left-circle fs-4"></i>Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 9. SALESMAN DETAILS PAGE ================= -->
+  <div id="salesmanDetailsScreen" class="screen">
+    <div class="glass-card text-center">
+      <h3 class="fw-bold mb-3 text-dark">Salesman Management</h3>
+      <div class="menu-grid">
+        <button class="btn btn-primary btn-menu" onclick="openModal('salesmanEntryModal')"><i class="bi bi-person-plus fs-4"></i>New Entry</button>
+        <button class="btn btn-warning btn-menu" onclick="openListSalesmanModal()"><i class="bi bi-people fs-4"></i>Modify</button>
+        <button class="btn btn-success btn-menu" onclick="openModal('givenBusinessModal')"><i class="bi bi-graph-up-arrow fs-4"></i>Business</button>
+        <button class="btn btn-danger btn-menu" onclick="navTo('optionsScreen')"><i class="bi bi-arrow-left-circle fs-4"></i>Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 10. BILLING DETAILS PAGE ================= -->
+  <div id="billingDetailsScreen" class="screen">
+    <div class="glass-card glass-card-lg text-center">
+      <h3 class="fw-bold mb-3 text-dark">Billing & POS Counter</h3>
+      <div class="menu-grid">
+        <button class="btn btn-primary btn-menu" onclick="openBillsModal()"><i class="bi bi-receipt-cutoff fs-4"></i>Billing</button>
+        <button class="btn btn-warning btn-menu" onclick="openModal('billModifyModal')"><i class="bi bi-pencil fs-4"></i>Bill-Modify</button>
+        <button class="btn btn-info btn-menu text-white" onclick="openModal('showBillDetailsModal')"><i class="bi bi-eye fs-4"></i>Bill Show</button>
+        <button class="btn btn-secondary btn-menu" onclick="alert('No bills currently placed on hold.')"><i class="bi bi-pause-circle fs-4"></i>Hold List</button>
+        <button class="btn btn-success btn-menu" onclick="window.print()"><i class="bi bi-printer fs-4"></i>Set Print</button>
+        <button class="btn btn-danger btn-menu" onclick="navTo('s6OperationScreen')"><i class="bi bi-arrow-left-circle fs-4"></i>Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 11. REPORT PAGE ================= -->
+  <div id="reportScreen" class="screen">
+    <div class="glass-card text-center">
+      <h3 class="fw-bold mb-3 text-dark">Master Inventory Reports</h3>
+      <div class="menu-grid">
+        <button class="btn btn-primary btn-menu" onclick="openModal('groupWiseStockModal')"><i class="bi bi-bar-chart fs-4"></i>Item Stock</button>
+        <button class="btn btn-danger btn-menu" onclick="navTo('s6OperationScreen')"><i class="bi bi-arrow-left-circle fs-4"></i>Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PRINT CONTAINER ================= -->
+  <div id="printArea" class="d-none p-4"></div>
+
+  <!-- ================= MODALS & FORMS ================= -->
+
+  <!-- A. NEW ITEM ENTRY MODAL -->
+  <div class="modal fade" id="newItemEntryModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white"><h5 class="modal-title">New Item Entry</h5></div>
+        <div class="modal-body">
+          <form id="newItemForm">
+            <div class="row g-2">
+              <div class="col-6"><label class="form-label small">Barcode</label><input type="number" class="form-control form-control-sm" id="it_barcode" required></div>
+              <div class="col-6"><label class="form-label small">Item Name</label><input type="text" class="form-control form-control-sm" id="it_name" required></div>
+              <div class="col-6">
+                <label class="form-label small">Group Name</label>
+                <select class="form-select form-select-sm" id="it_group">
+                  <option value="Electronics">Electronics</option>
+                  <option value="Apparel">Apparel</option>
+                  <option value="Grocery">Grocery</option>
+                  <option value="Stationery">Stationery</option>
+                </select>
+              </div>
+              <div class="col-6"><label class="form-label small">Company</label><input type="text" class="form-control form-control-sm" id="it_company" required></div>
+              <div class="col-6"><label class="form-label small">Style</label><input type="text" class="form-control form-control-sm" id="it_style" required></div>
+              <div class="col-6"><label class="form-label small">P. Rate (₹)</label><input type="number" class="form-control form-control-sm" id="it_prate" step="0.01" required></div>
+              <div class="col-6"><label class="form-label small">MRP (₹)</label><input type="number" class="form-control form-control-sm" id="it_mrp" step="0.01" required></div>
+              <div class="col-6"><label class="form-label small">P. Qty</label><input type="number" class="form-control form-control-sm" id="it_qty" required></div>
+              <div class="col-12"><label class="form-label small">GST (%)</label><input type="number" class="form-control form-control-sm" id="it_gst" step="0.01" required></div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="cancelItemEntry()">Cancel</button>
+          <div>
+            <button type="button" class="btn btn-info btn-sm text-white" onclick="saveItem(true)">More</button>
+            <button type="button" class="btn btn-success btn-sm" onclick="saveItem(false)">Exit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B. ITEM MODIFY MODAL -->
+  <div class="modal fade" id="itemModifyModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark"><h5 class="modal-title">Item Modify Form</h5></div>
+        <div class="modal-body">
+          <form id="modifyItemForm">
+            <div class="row g-2">
+              <div class="col-6"><label class="form-label small">Barcode</label><input type="number" class="form-control form-control-sm" id="m_it_barcode"></div>
+              <div class="col-6"><label class="form-label small">Item Name</label><input type="text" class="form-control form-control-sm" id="m_it_name"></div>
+              <div class="col-6">
+                <label class="form-label small">Group Name</label>
+                <select class="form-select form-select-sm" id="m_it_group">
+                  <option value="Electronics">Electronics</option>
+                  <option value="Apparel">Apparel</option>
+                  <option value="Grocery">Grocery</option>
+                  <option value="Stationery">Stationery</option>
+                </select>
+              </div>
+              <div class="col-6"><label class="form-label small">Company</label><input type="text" class="form-control form-control-sm" id="m_it_company"></div>
+              <div class="col-6"><label class="form-label small">Style</label><input type="text" class="form-control form-control-sm" id="m_it_style"></div>
+              <div class="col-6"><label class="form-label small">P. Rate (₹)</label><input type="number" class="form-control form-control-sm" id="m_it_prate" step="0.01"></div>
+              <div class="col-6"><label class="form-label small">MRP (₹)</label><input type="number" class="form-control form-control-sm" id="m_it_mrp" step="0.01"></div>
+              <div class="col-6"><label class="form-label small">P. Qty</label><input type="number" class="form-control form-control-sm" id="m_it_qty"></div>
+              <div class="col-12"><label class="form-label small">GST (%)</label><input type="number" class="form-control form-control-sm" id="m_it_gst" step="0.01"></div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-warning btn-sm" onclick="applyItemModify()">Modify</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C. ITEM SEARCHING MODAL -->
+  <div class="modal fade" id="itemSearchModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white"><h5 class="modal-title">Item Searching List</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-4">
+              <label class="form-label small">Group Name</label>
+              <select class="form-select form-select-sm" id="s_group">
+                <option value="">All Groups</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Apparel">Apparel</option>
+                <option value="Grocery">Grocery</option>
+                <option value="Stationery">Stationery</option>
+              </select>
+            </div>
+            <div class="col-4">
+              <label class="form-label small">Company</label>
+              <select class="form-select form-select-sm" id="s_company">
+                <option value="">All Companies</option>
+              </select>
+            </div>
+            <div class="col-4">
+              <label class="form-label small">Style</label>
+              <input type="text" class="form-control form-control-sm" id="s_style" placeholder="Style search">
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm m-0" id="searchItemTable">
+              <thead><tr><th>Barcode</th><th>Item Name</th><th>Group</th><th>Company</th><th>Style</th><th>MRP</th><th>Qty</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="executeItemSearch()">Search</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D. GROUP DISCOUNT MODAL -->
+  <div class="modal fade" id="groupDiscountModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white"><h5 class="modal-title">Set Group Discount</h5></div>
+        <div class="modal-body">
+          <div class="mb-2">
+            <label class="form-label small">Group Name</label>
+            <select class="form-select form-select-sm" id="gd_group">
+              <option value="Electronics">Electronics</option>
+              <option value="Apparel">Apparel</option>
+              <option value="Grocery">Grocery</option>
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small">Company</label>
+            <select class="form-select form-select-sm" id="gd_company"><option value="Generic">Generic</option></select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small">Discount Rate (₹)</label>
+            <input type="number" class="form-control form-control-sm" id="gd_rate" step="0.01">
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="gdTable">
+              <thead><tr><th>Group Name</th><th>Company</th><th>Discount Rate</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="saveGroupDiscount()">Save</button>
+          <button type="button" class="btn btn-warning btn-sm mod-btn" onclick="modifyGroupDiscount()">Modify</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- E. STOCK SUMMARY GROUP / STYLE REPORT MODAL -->
+  <div class="modal fade" id="stockSummaryModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white"><h5 class="modal-title">Stock Summary Report</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-4">
+              <select class="form-select form-select-sm" id="ss_group">
+                <option value="Electronics">Electronics</option>
+                <option value="Apparel">Apparel</option>
+                <option value="Grocery">Grocery</option>
+              </select>
+            </div>
+            <div class="col-4"><select class="form-select form-select-sm" id="ss_company"><option>Generic</option></select></div>
+            <div class="col-4"><input type="text" class="form-control form-control-sm" id="ss_style" placeholder="Style"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="ssTable">
+              <thead><tr><th>Group</th><th>P. Rate</th><th>Qty</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="saveStockSummary()">Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- F. NEW SUPPLIER ENTRY MODAL -->
+  <div class="modal fade" id="newSupplierModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white"><h5 class="modal-title">New Supplier Entry</h5></div>
+        <div class="modal-body">
+          <form id="supplierForm">
+            <div class="mb-2"><label class="form-label small">Supplier Name</label><input type="text" class="form-control form-control-sm" id="sup_name" required></div>
+            <div class="mb-2"><label class="form-label small">Address</label><input type="text" class="form-control form-control-sm" id="sup_address" required></div>
+            <div class="mb-2"><label class="form-label small">Phone No</label><input type="text" class="form-control form-control-sm" id="sup_phone" required></div>
+            <div class="mb-2"><label class="form-label small">PAN No</label><input type="text" class="form-control form-control-sm" id="sup_pan" required></div>
+            <div class="mb-2"><label class="form-label small">Opening Balance (₹)</label><input type="number" class="form-control form-control-sm" id="sup_balance" step="0.01" required></div>
+          </form>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="cancelSupplierEntry()">Cancel</button>
+          <div>
+            <button type="button" class="btn btn-info btn-sm text-white" onclick="saveSupplier(true)">More</button>
+            <button type="button" class="btn btn-success btn-sm" onclick="saveSupplier(false)">Exit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- G. LIST OF SUPPLIERS / MODIFY MODAL -->
+  <div class="modal fade" id="supplierListModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark"><h5 class="modal-title">List of All Suppliers</h5></div>
+        <div class="modal-body">
+          <div class="table-responsive mb-3">
+            <table class="table table-hover table-bordered table-sm" id="supListTable">
+              <thead><tr><th>Supplier Name</th><th>Address</th><th>Phone</th><th>PAN</th><th>Balance</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="row g-2">
+            <div class="col-6"><input type="text" class="form-control form-control-sm" id="m_sup_name" placeholder="Supplier Name"></div>
+            <div class="col-6"><input type="text" class="form-control form-control-sm" id="m_sup_address" placeholder="Address"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-warning btn-sm mod-btn" onclick="modifySupplier()">Modify</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- H. SUPPLIER SALE SHEET MODAL -->
+  <div class="modal fade" id="supplierSaleSheetModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white"><h5 class="modal-title">Supplier Wise Sale Sheet</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-12"><label class="form-label small">Supplier</label><select class="form-select form-select-sm" id="sss_supplier"></select></div>
+            <div class="col-6"><label class="form-label small">From Date</label><input type="date" class="form-control form-control-sm" id="sss_fdate"></div>
+            <div class="col-6"><label class="form-label small">To Date</label><input type="date" class="form-control form-control-sm" id="sss_tdate"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="sssTable">
+              <thead><tr><th>Item Name</th><th>MRP (₹)</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="saveSupplierSaleSheet()">Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- I. ITEM STOCK LIST MODAL -->
+  <div class="modal fade" id="itemStockListModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-secondary text-white"><h5 class="modal-title">Item Stock List</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-4"><label class="form-label small">Group Name</label><select class="form-select form-select-sm" id="isl_group"><option value="Electronics">Electronics</option><option value="Apparel">Apparel</option></select></div>
+            <div class="col-4"><label class="form-label small">Supplier</label><select class="form-select form-select-sm" id="isl_sup"></select></div>
+            <div class="col-4"><label class="form-label small">Sale Rate (₹)</label><input type="number" class="form-control form-control-sm" id="isl_salerate"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="islTable">
+              <thead><tr><th>Barcode</th><th>Item Name</th><th>Company</th><th>Qty</th><th>MRP</th><th>P. Rate</th><th>GST%</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="saveItemStockList()">Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- J. PAYMENT ENTRY MODAL -->
+  <div class="modal fade" id="paymentEntryModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white"><h5 class="modal-title">Payment Entry</h5></div>
+        <div class="modal-body">
+          <div class="row g-2">
+            <div class="col-12"><label class="form-label small">Supplier</label><select class="form-select form-select-sm" id="pay_sup" onchange="syncPaySupplierAddress()"></select></div>
+            <div class="col-12"><label class="form-label small">Address</label><input type="text" class="form-control form-control-sm" id="pay_address" readonly></div>
+            <div class="col-12"><label class="form-label small">Amount (₹)</label><input type="number" class="form-control form-control-sm" id="pay_amount"></div>
+            <div class="col-12 text-center my-2">
+              <div class="btn-group w-100" role="group">
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setPayMethod('Cash')">Cash</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setPayMethod('Card')">Card</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setPayMethod('Cheque')">Cheque</button>
+              </div>
+            </div>
+            <div class="col-12"><label class="form-label small">Particulars</label><input type="text" class="form-control form-control-sm" id="pay_particulars"></div>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="cancelPaymentEntry()">Cancel</button>
+          <div>
+            <button type="button" class="btn btn-info btn-sm text-white" onclick="savePaymentEntry(true)">More</button>
+            <button type="button" class="btn btn-success btn-sm" onclick="savePaymentEntry(false)">Exit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- K. LIST OF PAYMENT MODAL -->
+  <div class="modal fade" id="listPaymentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white"><h5 class="modal-title">List of Payments</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label small">From Date</label><input type="date" class="form-control form-control-sm" id="lop_fdate"></div>
+            <div class="col-6"><label class="form-label small">To Date</label><input type="date" class="form-control form-control-sm" id="lop_tdate"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="lopTable">
+              <thead><tr><th>Supplier</th><th>Particulars</th><th>Amount (₹)</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- L. SUPPLIER LEDGER MODAL -->
+  <div class="modal fade" id="supplierLedgerModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white"><h5 class="modal-title">Supplier Ledger</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-4"><label class="form-label small">Supplier</label><select class="form-select form-select-sm" id="sled_sup" onchange="buildSupplierLedger()"></select></div>
+            <div class="col-4"><label class="form-label small">From Date</label><input type="date" class="form-control form-control-sm" id="sled_fdate"></div>
+            <div class="col-4"><label class="form-label small">To Date</label><input type="date" class="form-control form-control-sm" id="sled_tdate"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="supplierLedgerTable">
+              <thead><tr><th>Description</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M. SUPPLIER WISE GROUP STOCK REPORT MODAL -->
+  <div class="modal fade" id="supplierGroupStockModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-secondary text-white"><h5 class="modal-title">Supplier Wise Group Stock</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-12"><label class="form-label small">Supplier</label><select class="form-select form-select-sm" id="swg_sup" onchange="buildSupplierGroupStock()"></select></div>
+            <div class="col-6"><label class="form-label small">From Date</label><input type="date" class="form-control form-control-sm"></div>
+            <div class="col-6"><label class="form-label small">To Date</label><input type="date" class="form-control form-control-sm"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="swgTable">
+              <thead><tr><th>Group Name</th><th>Opening Qty</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- N. NEW CLIENT ENTRY MODAL -->
+  <div class="modal fade" id="newClientModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white"><h5 class="modal-title">New Client Entry</h5></div>
+        <div class="modal-body">
+          <form id="clientForm">
+            <div class="mb-2"><label class="form-label small">Mobile No</label><input type="number" class="form-control form-control-sm" id="cli_mobile" required></div>
+            <div class="mb-2"><label class="form-label small">Client Name</label><input type="text" class="form-control form-control-sm" id="cli_name" required></div>
+            <div class="mb-2"><label class="form-label small">Address</label><input type="text" class="form-control form-control-sm" id="cli_address" required></div>
+            <div class="mb-2"><label class="form-label small">E-Mail Id</label><input type="email" class="form-control form-control-sm" id="cli_email" required></div>
+            <div class="mb-2"><label class="form-label small">Opening Balance (₹)</label><input type="number" class="form-control form-control-sm" id="cli_balance" step="0.01" required></div>
+            <div class="row g-2">
+              <div class="col-6"><label class="form-label small">DOB</label><input type="date" class="form-control form-control-sm" id="cli_dob"></div>
+              <div class="col-6"><label class="form-label small">Anniversary</label><input type="date" class="form-control form-control-sm" id="cli_anniv"></div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="cancelClientEntry()">Cancel</button>
+          <div>
+            <button type="button" class="btn btn-info btn-sm text-white" onclick="saveClient(true)">More</button>
+            <button type="button" class="btn btn-success btn-sm" onclick="saveClient(false)">Exit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- O. LIST OF ALL CLIENTS MODAL -->
+  <div class="modal fade" id="clientListModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark"><h5 class="modal-title">List of All Clients</h5></div>
+        <div class="modal-body">
+          <div class="table-responsive mb-3">
+            <table class="table table-hover table-bordered table-sm" id="cliListTable">
+              <thead><tr><th>Client Name</th><th>Mobile No</th><th>Email</th><th>Address</th><th>Balance</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="row g-2">
+            <div class="col-6"><input type="text" class="form-control form-control-sm" id="m_cli_name" placeholder="Client Name"></div>
+            <div class="col-6"><input type="text" class="form-control form-control-sm" id="m_cli_mobile" placeholder="Mobile No"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-warning btn-sm mod-btn" onclick="modifyClient()">Modify</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P. RECEIPT ENTRY MODAL -->
+  <div class="modal fade" id="receiptEntryModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white"><h5 class="modal-title">Receipt Entry</h5></div>
+        <div class="modal-body">
+          <div class="mb-2"><label class="form-label small">Client Name</label><select class="form-select form-select-sm" id="rec_cli"></select></div>
+          <div class="mb-2"><label class="form-label small">Particulars</label><input type="text" class="form-control form-control-sm" id="rec_particulars"></div>
+          <div class="mb-2"><label class="form-label small">Amount (₹)</label><input type="number" class="form-control form-control-sm" id="rec_amount" step="0.01"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="saveReceiptEntry()">Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q. LIST OF RECEIPT MODAL -->
+  <div class="modal fade" id="receiptListModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white"><h5 class="modal-title">List of Receipt</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-6"><input type="date" class="form-control form-control-sm" id="lor_fdate"></div>
+            <div class="col-6"><input type="date" class="form-control form-control-sm" id="lor_tdate"></div>
+          </div>
+          <div class="table-responsive mb-3">
+            <table class="table table-hover table-bordered table-sm" id="receiptTable">
+              <thead><tr><th>Client Name</th><th>Particulars</th><th>Amount (₹)</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="row g-2">
+            <div class="col-6"><input type="text" class="form-control form-control-sm" id="m_rec_part" placeholder="Particulars"></div>
+            <div class="col-6"><input type="number" class="form-control form-control-sm" id="m_rec_amt" placeholder="Amount"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-warning btn-sm mod-btn" onclick="modifyReceipt()">Modify</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- R. CLIENT LEDGER MODAL -->
+  <div class="modal fade" id="clientLedgerModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white"><h5 class="modal-title">Client Ledger</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-4"><label class="form-label small">Client Name</label><select class="form-select form-select-sm" id="cled_client"></select></div>
+            <div class="col-4"><label class="form-label small">From Date</label><input type="date" class="form-control form-control-sm"></div>
+            <div class="col-4"><label class="form-label small">To Date</label><input type="date" class="form-control form-control-sm"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="clientLedgerTable">
+              <thead><tr><th>Description</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="buildClientLedger()">Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S. CLIENT BUSINESS MODAL -->
+  <div class="modal fade" id="clientBusinessModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white"><h5 class="modal-title">Client Business</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-12"><label class="form-label small">Client Name</label><select class="form-select form-select-sm" id="cb_client"></select></div>
+            <div class="col-6"><label class="form-label small">From Date</label><input type="date" class="form-control form-control-sm"></div>
+            <div class="col-6"><label class="form-label small">To Date</label><input type="date" class="form-control form-control-sm"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="cbTable">
+              <thead><tr><th>Item Name</th><th>MRP</th><th>Qty</th><th>Amount (₹)</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="buildClientBusiness()">Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- T. CLIENT OCCASION MODAL -->
+  <div class="modal fade" id="clientOccasionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark"><h5 class="modal-title">Search Client Birthday / Anniversary</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label small">Date</label><input type="date" class="form-control form-control-sm" id="occ_date"></div>
+            <div class="col-6">
+              <label class="form-label small">Occasion</label>
+              <select class="form-select form-select-sm" id="occ_type">
+                <option value="Birthday">Birthday</option>
+                <option value="Anniversary">Anniversary</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="occTable">
+              <thead><tr><th>Client Name</th><th>Address</th><th>DOB</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="searchOccasion()">Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- U. EXPENSE ENTRY MODAL -->
+  <div class="modal fade" id="expenseEntryModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white"><h5 class="modal-title">Expense Entry</h5></div>
+        <div class="modal-body">
+          <form id="expenseForm">
+            <div class="mb-2"><label class="form-label small">Voucher No</label><input type="number" class="form-control form-control-sm" id="exp_vno" required></div>
+            <div class="mb-2">
+              <label class="form-label small">Group Name</label>
+              <select class="form-select form-select-sm" id="exp_group">
+                <option value="Utilities">Utilities</option>
+                <option value="Rent">Rent</option>
+                <option value="Salaries">Salaries</option>
+                <option value="Logistics">Logistics</option>
+              </select>
+            </div>
+            <div class="mb-2"><label class="form-label small">Particulars</label><input type="text" class="form-control form-control-sm" id="exp_part" required></div>
+            <div class="mb-2"><label class="form-label small">Date of Expense</label><input type="date" class="form-control form-control-sm" id="exp_date" required></div>
+            <div class="mb-2"><label class="form-label small">Paid Amount (₹)</label><input type="number" class="form-control form-control-sm" id="exp_amount" step="0.01" required></div>
+            <div class="text-center my-2">
+              <div class="btn-group w-100">
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="saveExpense(true)">Cash</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="askCardNumber('Expense')">Card</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="askChequeNumber('Expense')">Cheque</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="cancelExpenseEntry()">Cancel</button>
+          <div>
+            <button type="button" class="btn btn-info btn-sm text-white" id="expMoreBtn" onclick="saveExpense(true)">More</button>
+            <button type="button" class="btn btn-success btn-sm" onclick="saveExpense(false)">Exit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V. GROUP WISE EXPENSE LIST MODAL -->
+  <div class="modal fade" id="groupExpenseModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark"><h5 class="modal-title">Group Wise Expense List</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-12">
+              <label class="form-label small">Group Name</label>
+              <select class="form-select form-select-sm" id="gexp_group">
+                <option value="Utilities">Utilities</option>
+                <option value="Rent">Rent</option>
+                <option value="Salaries">Salaries</option>
+                <option value="Logistics">Logistics</option>
+              </select>
+            </div>
+            <div class="col-6"><label class="form-label small">From Date</label><input type="date" class="form-control form-control-sm" id="gexp_fdate"></div>
+            <div class="col-6"><label class="form-label small">To Date</label><input type="date" class="form-control form-control-sm" id="gexp_tdate"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="gexpTable">
+              <thead><tr><th>V. No</th><th>Date</th><th>Particulars</th><th>Paid Amt</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="buildGroupExpense()">Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- W. ALL EXPENSE FORM MODAL -->
+  <div class="modal fade" id="allExpenseModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-secondary text-white"><h5 class="modal-title">All Expense</h5></div>
+        <div class="modal-body">
+          <div class="mb-3"><label class="form-label small">Date</label><input type="date" class="form-control form-control-sm" id="allexp_date"></div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="allexpTable">
+              <thead><tr><th>V. No</th><th>Date</th><th>Particulars</th><th>Paid Amt</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="buildAllExpense()">Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- X. RECEIVED ITEM FORM MODAL -->
+  <div class="modal fade" id="receivedItemModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white"><h5 class="modal-title">Received Item Entry</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-3"><label class="form-label small">Invoice No</label><input type="number" class="form-control form-control-sm" id="ri_inv"></div>
+            <div class="col-3"><label class="form-label small">Date</label><input type="date" class="form-control form-control-sm" id="ri_date"></div>
+            <div class="col-3"><label class="form-label small">Supplier</label><select class="form-select form-select-sm" id="ri_sup"></select></div>
+            <div class="col-3"><label class="form-label small">Receiving Qty</label><input type="number" class="form-control form-control-sm" id="ri_qty"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="riTable">
+              <thead><tr><th>Barcode</th><th>Item Name</th><th>Group</th><th>Company</th><th>Style</th><th>Qty</th><th>P. Rate</th><th>GST%</th><th>Amount (₹)</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="cancelReceivedItem()">Cancel</button>
+          <div>
+            <button type="button" class="btn btn-info btn-sm text-white" onclick="saveReceivedTable()">Save</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="addReceivedItem(true)">Add</button>
+            <button type="button" class="btn btn-success btn-sm" onclick="addReceivedItem(false)">Exit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Y. RECEIVED ITEM MODIFY LIST MODAL -->
+  <div class="modal fade" id="receivedItemModifyModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark"><h5 class="modal-title">Received Item Modify List</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-12"><label class="form-label small">Supplier</label><select class="form-select form-select-sm" id="rim_sup"></select></div>
+            <div class="col-6"><label class="form-label small">From Date</label><input type="date" class="form-control form-control-sm"></div>
+            <div class="col-6"><label class="form-label small">To Date</label><input type="date" class="form-control form-control-sm"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="rimTable">
+              <thead><tr><th>Invoice No</th><th>Date</th><th>Supplier</th><th>Amount</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="buildReceivedItemModify()">Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Z. BILL WISE RECEIVED ITEM MODAL -->
+  <div class="modal fade" id="billWiseReceivedModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white"><h5 class="modal-title">Bill Wise Received Item</h5></div>
+        <div class="modal-body">
+          <div class="mb-3"><label class="form-label small">Rec. Qty</label><input type="number" class="form-control form-control-sm" id="bwr_qty"></div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="bwrTable">
+              <thead><tr><th>Group</th><th>P. Rate</th><th>Company</th><th>Qty</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="buildBillWiseReceived()">Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AA. PURCHASE REPORT MODAL -->
+  <div class="modal fade" id="purchaseReportModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-secondary text-white"><h5 class="modal-title">Purchase Report</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label small">From Date</label><input type="date" class="form-control form-control-sm"></div>
+            <div class="col-6"><label class="form-label small">To Date</label><input type="date" class="form-control form-control-sm"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="prTable">
+              <thead><tr><th>Supplier Name</th><th>Address</th><th>Invoice No</th><th>Qty</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="buildPurchaseReport()">Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BB. PURCHASE ITEM FLOW MODAL -->
+  <div class="modal fade" id="purchaseFlowModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white"><h5 class="modal-title">Purchase Item Flow</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-12"><label class="form-label small">Barcode</label><input type="number" class="form-control form-control-sm" id="pif_barcode" onchange="buildPurchaseFlow()"></div>
+            <div class="col-6"><input type="date" class="form-control form-control-sm"></div>
+            <div class="col-6"><input type="date" class="form-control form-control-sm"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="pifTable">
+              <thead><tr><th>Invoice No</th><th>Supplier</th><th>Amount</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CC. SALESMAN ENTRY MODAL -->
+  <div class="modal fade" id="salesmanEntryModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white"><h5 class="modal-title">Salesman Entry</h5></div>
+        <div class="modal-body">
+          <form id="salesmanForm">
+            <div class="mb-2"><label class="form-label small">Salesman Name</label><input type="text" class="form-control form-control-sm" id="sm_name" required></div>
+            <div class="mb-2"><label class="form-label small">Address</label><input type="text" class="form-control form-control-sm" id="sm_address" required></div>
+            <div class="mb-2"><label class="form-label small">Phone No</label><input type="number" class="form-control form-control-sm" id="sm_phone" required></div>
+            <div class="mb-2"><label class="form-label small">Commission (%)</label><input type="number" class="form-control form-control-sm" id="sm_comm" step="0.01" required></div>
+          </form>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="cancelSalesmanEntry()">Cancel</button>
+          <div>
+            <button type="button" class="btn btn-info btn-sm text-white" onclick="saveSalesman(true)">More</button>
+            <button type="button" class="btn btn-success btn-sm" onclick="saveSalesman(false)">Exit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DD. LIST OF ALL SALESMAN MODAL -->
+  <div class="modal fade" id="listSalesmanModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark"><h5 class="modal-title">List of All Salesman</h5></div>
+        <div class="modal-body">
+          <div class="table-responsive mb-3">
+            <table class="table table-bordered table-sm" id="smListTable">
+              <thead><tr><th>Salesman Name</th><th>Address</th><th>Commission (₹)</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="row g-2">
+            <div class="col-6"><input type="text" class="form-control form-control-sm" id="m_sm_name" placeholder="Name"></div>
+            <div class="col-6"><input type="text" class="form-control form-control-sm" id="m_sm_addr" placeholder="Address"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="buildSalesmanList()">Save</button>
+          <button type="button" class="btn btn-warning btn-sm mod-btn" onclick="modifySalesmanList()">Modify</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EE. GIVEN BUSINESS BY SALESMAN MODAL -->
+  <div class="modal fade" id="givenBusinessModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white"><h5 class="modal-title">Given Business By Salesman</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-12"><label class="form-label small">Salesman</label><select class="form-select form-select-sm" id="gb_sm"></select></div>
+            <div class="col-6"><label class="form-label small">From Date</label><input type="date" class="form-control form-control-sm"></div>
+            <div class="col-6"><label class="form-label small">To Date</label><input type="date" class="form-control form-control-sm"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="gbTable">
+              <thead><tr><th>Date</th><th>Amount</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="buildGivenBusiness()">Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FF. BILLS FORM MODAL -->
+  <div class="modal fade" id="billsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white"><h5 class="modal-title">Billing Terminal (Bills Form)</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-4"><label class="form-label small">Bill No</label><input type="number" class="form-control form-control-sm" id="bill_no"></div>
+            <div class="col-4"><label class="form-label small">Salesman</label><select class="form-select form-select-sm" id="bill_sm"></select></div>
+            <div class="col-4"><label class="form-label small">Sale Qty</label><input type="number" class="form-control form-control-sm" id="bill_sqty" value="1"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="billTable">
+              <thead><tr><th>Barcode</th><th>Item Name</th><th>Qty</th><th>MRP</th><th>GST%</th><th>Amount (₹)</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="cancelBillsForm()">Cancel</button>
+          <div>
+            <button type="button" class="btn btn-info btn-sm text-white" onclick="saveBillsRow()">Save</button>
+            <button type="button" class="btn btn-warning btn-sm mod-btn" onclick="modifyBillsRow()">Modify</button>
+            <button type="button" class="btn btn-dark btn-sm" onclick="printBillTable()">Print</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="saveAndAddBill(true)">Add</button>
+            <button type="button" class="btn btn-success btn-sm" onclick="saveAndAddBill(false)">Exit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GG. BILL MODIFY MODAL -->
+  <div class="modal fade" id="billModifyModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark"><h5 class="modal-title">Bill Modify Form</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label small">From Date</label><input type="date" class="form-control form-control-sm"></div>
+            <div class="col-6"><label class="form-label small">To Date</label><input type="date" class="form-control form-control-sm"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="bmTable">
+              <thead><tr><th>Date</th><th>Salesman</th><th>Amount</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="buildBillModify()">Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HH. SHOW BILL DETAILS MODAL -->
+  <div class="modal fade" id="showBillDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white"><h5 class="modal-title">Show Bill Details</h5></div>
+        <div class="modal-body">
+          <div class="mb-3"><label class="form-label small">Bill No</label><input type="number" class="form-control form-control-sm" id="sbd_no"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="showBillDetailsAction()">Show</button>
+          <button type="button" class="btn btn-dark btn-sm" onclick="printBillTable()">Print</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- II. GROUP WISE ITEM STOCK MODAL (REPORT SCREEN) -->
+  <div class="modal fade" id="groupWiseStockModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white"><h5 class="modal-title">Group Wise Item Stock Report</h5></div>
+        <div class="modal-body">
+          <div class="row g-2 mb-3">
+            <div class="col-4">
+              <label class="form-label small">Group Name</label>
+              <select class="form-select form-select-sm" id="gwis_group">
+                <option value="Electronics">Electronics</option>
+                <option value="Apparel">Apparel</option>
+                <option value="Grocery">Grocery</option>
+                <option value="Stationery">Stationery</option>
+              </select>
+            </div>
+            <div class="col-4"><label class="form-label small">From Date</label><input type="date" class="form-control form-control-sm"></div>
+            <div class="col-4"><label class="form-label small">To Date</label><input type="date" class="form-control form-control-sm"></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="gwisTable">
+              <thead><tr><th>Group Name</th><th>Opening Qty</th><th>Receiving Qty</th><th>Sale Qty</th><th>Closing Qty</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" onclick="buildGroupWiseItemStock()">Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JJ. LOGIN ENTRY MODAL (ADMIN ONLY PASSWORD SETTINGS) -->
+  <div class="modal fade" id="loginEntryModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white"><h5 class="modal-title">Login Entry & Credentials</h5></div>
+        <div class="modal-body">
+          <form id="loginEntryForm">
+            <div class="mb-2"><label class="form-label small">User Name</label><input type="text" class="form-control form-control-sm" id="le_user" value="Admin" required></div>
+            <div class="mb-2"><label class="form-label small">Password</label><input type="password" class="form-control form-control-sm" id="le_pass" required></div>
+            <div class="mb-2"><label class="form-label small">Re-type Password</label><input type="password" class="form-control form-control-sm" id="le_repass" required></div>
+            <div id="le_error" class="text-danger small d-none">Passwords do not match!</div>
+          </form>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="cancelLoginEntry()">Cancel</button>
+          <div>
+            <button type="button" class="btn btn-primary btn-sm" onclick="saveLoginEntry(true)">Ok</button>
+            <button type="button" class="btn btn-success btn-sm" onclick="saveLoginEntry(false)">Exit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- APPLICATION LOGIC ENGINE -->
+  <script>
+    /* ================= GLOBAL STATE ================= */
+    const STATE = {
+      currentUser: null,
+      role: 'Operator',
+      storedAdminPass: 'Krishn',
+      operatorPass: 'Kalpana',
+      loginAttempts: 0,
+      
+      // Entity Repositories
+      items: [
+        { barcode: '1001', name: 'Smart LED TV', group: 'Electronics', company: 'Sony', style: 'Bravia 4K', prate: 35000, mrp: 45000, qty: 15, gst: 18 },
+        { barcode: '1002', name: 'Denim Jacket', group: 'Apparel', company: 'Levi', style: 'Vintage Slim', prate: 1800, mrp: 3200, qty: 25, gst: 12 }
+      ],
+      suppliers: [
+        { name: 'National Electronics Dist.', address: 'Ring Road, Delhi', phone: '9811002233', pan: 'ABCPD1234E', balance: 50000 }
+      ],
+      clients: [
+        { name: 'Rajesh Sharma', mobile: '9876543210', address: 'Civil Lines, Gorakhpur', email: 'rajesh@example.com', balance: 12000, dob: '1985-06-15', anniv: '2012-11-20' }
+      ],
+      expenses: [
+        { vno: '501', group: 'Rent', particulars: 'Shop Floor Rent Oct', date: '2026-10-01', amount: 25000 }
+      ],
+      payments: [
+        { supplier: 'National Electronics Dist.', particulars: 'Payment Cash', amount: 15000, date: '2026-09-10' }
+      ],
+      receipts: [
+        { client: 'Rajesh Sharma', particulars: 'Receipt Advance Cash', amount: 5000, date: '2026-09-12' }
+      ],
+      salesmen: [
+        { name: 'Amit Kumar', address: 'North Avenue', phone: '9988776655', comm: 5 }
+      ],
+      groupDiscounts: [],
+      receivedRecords: [],
+      bills: []
+    };
+
+    /* ================= ROUTING & NAVIGATION ================= */
+    function navTo(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(screenId);
+      if (target) {
+        target.classList.add('active');
+        window.scrollTo(0,0);
+      }
+    }
+
+    function exitApp() {
+      // Exit application directly without alert
+      window.location.reload();
+    }
+
+    function openModal(modalId) {
+      populateDropdowns();
+      const m = new bootstrap.Modal(document.getElementById(modalId));
+      m.show();
+    }
+
+    function closeModal(modalId) {
+      const el = document.getElementById(modalId);
+      const modal = bootstrap.Modal.getInstance(el);
+      if (modal) modal.hide();
+    }
+
+    /* ================= AUTHENTICATION & SECURITY ================= */
+    function handleLogin() {
+      const user = document.getElementById('loginUser').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      const errBox = document.getElementById('loginError');
+
+      const isAdmin = (user.toLowerCase() === 'admin');
+      const targetPass = isAdmin ? STATE.storedAdminPass : STATE.operatorPass;
+
+      if (pass === targetPass) {
+        STATE.currentUser = user;
+        STATE.role = isAdmin ? 'Admin' : 'Operator';
+        STATE.loginAttempts = 0;
+        errBox.classList.add('d-none');
+        applySecurityPolicy();
+        navTo('s6OperationScreen');
+      } else {
+        STATE.loginAttempts++;
+        errBox.classList.remove('d-none');
+        if (STATE.loginAttempts >= 2) {
+          // Closed automatically without any message box
+          window.location.reload();
+        }
+      }
+    }
+
+    function applySecurityPolicy() {
+      const isAdmin = (STATE.role === 'Admin');
+      document.getElementById('roleBadge').innerText = `Role: ${STATE.role} (${STATE.currentUser})`;
+      document.getElementById('roleBadge').className = `badge ${isAdmin ? 'bg-primary' : 'bg-secondary'} px-3 py-2`;
+
+      // Operator cannot modify data & cannot change login credentials
+      document.querySelectorAll('.mod-btn').forEach(btn => {
+        btn.disabled = !isAdmin;
+      });
+
+      const loginEntryBtn = document.getElementById('loginEntryBtn');
+      if (loginEntryBtn) {
+        loginEntryBtn.disabled = !isAdmin;
+      }
+    }
+
+    /* ================= OPTIONS / LOGIN ENTRY ================= */
+    function openLoginEntryModal() {
+      if (STATE.role !== 'Admin') return;
+      document.getElementById('le_user').value = STATE.currentUser;
+      document.getElementById('le_pass').value = '';
+      document.getElementById('le_repass').value = '';
+      document.getElementById('le_error').classList.add('d-none');
+      openModal('loginEntryModal');
+    }
+
+    function saveLoginEntry(isMore) {
+      const p1 = document.getElementById('le_pass').value;
+      const p2 = document.getElementById('le_repass').value;
+      if (p1 !== p2 || p1.trim() === '') {
+        document.getElementById('le_error').classList.remove('d-none');
+        return;
+      }
+      STATE.storedAdminPass = p1;
+      document.getElementById('le_error').classList.add('d-none');
+      if (isMore) {
+        document.getElementById('loginEntryForm').reset();
+      } else {
+        closeModal('loginEntryModal');
+        navTo('optionsScreen');
+      }
+    }
+
+    function cancelLoginEntry() {
+      document.getElementById('loginEntryForm').reset();
+      closeModal('loginEntryModal');
+      navTo('optionsScreen');
+    }
+
+    /* ================= DROPDOWN SYNCHRONIZERS ================= */
+    function populateDropdowns() {
+      const supSelects = ['sss_supplier', 'isl_sup', 'pay_sup', 'sled_sup', 'swg_sup', 'ri_sup', 'rim_sup'];
+      supSelects.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = '';
+        STATE.suppliers.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s.name;
+          opt.textContent = s.name;
+          el.appendChild(opt);
+        });
+      });
+
+      const cliSelects = ['rec_cli', 'cled_client', 'cb_client'];
+      cliSelects.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = '';
+        STATE.clients.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.name;
+          opt.textContent = c.name;
+          el.appendChild(opt);
+        });
+      });
+
+      const smSelects = ['bill_sm', 'gb_sm'];
+      smSelects.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = '';
+        STATE.salesmen.forEach(sm => {
+          const opt = document.createElement('option');
+          opt.value = sm.name;
+          opt.textContent = sm.name;
+          el.appendChild(opt);
+        });
+      });
+
+      // Item Company dropdown sync
+      const sComp = document.getElementById('s_company');
+      if (sComp) {
+        sComp.innerHTML = '<option value="">All Companies</option>';
+        const comps = [...new Set(STATE.items.map(i => i.company))];
+        comps.forEach(c => {
+          sComp.innerHTML += `<option value="${c}">${c}</option>`;
+        });
+      }
+    }
+
+    /* ================= 1. ITEM MODULE LOGIC ================= */
+    function saveItem(isMore) {
+      const b = document.getElementById('it_barcode').value.trim();
+      const n = document.getElementById('it_name').value.trim();
+      if (!b || !n) return;
+
+      const item = {
+        barcode: b,
+        name: n,
+        group: document.getElementById('it_group').value,
+        company: document.getElementById('it_company').value,
+        style: document.getElementById('it_style').value,
+        prate: parseFloat(document.getElementById('it_prate').value) || 0,
+        mrp: parseFloat(document.getElementById('it_mrp').value) || 0,
+        qty: parseInt(document.getElementById('it_qty').value) || 0,
+        gst: parseFloat(document.getElementById('it_gst').value) || 0
+      };
+
+      STATE.items.push(item);
+
+      if (isMore) {
+        document.getElementById('newItemForm').reset();
+      } else {
+        closeModal('newItemEntryModal');
+        navTo('itemDetailsScreen');
+      }
+    }
+
+    function cancelItemEntry() {
+      document.getElementById('newItemForm').reset();
+      closeModal('newItemEntryModal');
+      navTo('itemDetailsScreen');
+    }
+
+    function openItemModifyModal() {
+      if (STATE.role !== 'Admin') return;
+      if (STATE.items.length > 0) {
+        const last = STATE.items[STATE.items.length - 1];
+        document.getElementById('m_it_barcode').value = last.barcode;
+        document.getElementById('m_it_name').value = last.name;
+        document.getElementById('m_it_group').value = last.group;
+        document.getElementById('m_it_company').value = last.company;
+        document.getElementById('m_it_style').value = last.style;
+        document.getElementById('m_it_prate').value = last.prate;
+        document.getElementById('m_it_mrp').value = last.mrp;
+        document.getElementById('m_it_qty').value = last.qty;
+        document.getElementById('m_it_gst').value = last.gst;
+      }
+      openModal('itemModifyModal');
+    }
+
+    function applyItemModify() {
+      if (STATE.items.length > 0) {
+        const idx = STATE.items.length - 1;
+        STATE.items[idx] = {
+          barcode: document.getElementById('m_it_barcode').value,
+          name: document.getElementById('m_it_name').value,
+          group: document.getElementById('m_it_group').value,
+          company: document.getElementById('m_it_company').value,
+          style: document.getElementById('m_it_style').value,
+          prate: parseFloat(document.getElementById('m_it_prate').value) || 0,
+          mrp: parseFloat(document.getElementById('m_it_mrp').value) || 0,
+          qty: parseInt(document.getElementById('m_it_qty').value) || 0,
+          gst: parseFloat(document.getElementById('m_it_gst').value) || 0
+        };
+      }
+      closeModal('itemModifyModal');
+      navTo('itemDetailsScreen');
+    }
+
+    function executeItemSearch() {
+      const g = document.getElementById('s_group').value;
+      const c = document.getElementById('s_company').value;
+      const s = document.getElementById('s_style').value.toLowerCase();
+      const tbody = document.querySelector('#searchItemTable tbody');
+      tbody.innerHTML = '';
+
+      STATE.items.filter(i => {
+        return (!g || i.group === g) && (!c || i.company === c) && (!s || i.style.toLowerCase().includes(s));
+      }).forEach(it => {
+        tbody.innerHTML += `<tr><td>${it.barcode}</td><td>${it.name}</td><td>${it.group}</td><td>${it.company}</td><td>${it.style}</td><td>₹${it.mrp}</td><td>${it.qty}</td></tr>`;
+      });
+    }
+
+    function showAllItemList() {
+      const out = document.getElementById('itemListOutput');
+      const tbody = document.querySelector('#itemDirTable tbody');
+      tbody.innerHTML = '';
+      STATE.items.forEach(it => {
+        tbody.innerHTML += `<tr><td>${it.barcode}</td><td>${it.name}</td><td>${it.group}</td><td>${it.company}</td><td>${it.style}</td><td>₹${it.prate}</td><td>₹${it.mrp}</td><td>${it.qty}</td><td>${it.gst}%</td></tr>`;
+      });
+      out.classList.remove('d-none');
+    }
+
+    function saveGroupDiscount() {
+      const g = document.getElementById('gd_group').value;
+      const c = document.getElementById('gd_company').value;
+      const r = document.getElementById('gd_rate').value;
+      STATE.groupDiscounts.push({ group: g, company: c, rate: r });
+
+      const tbody = document.querySelector('#gdTable tbody');
+      tbody.innerHTML += `<tr><td>${g}</td><td>${c}</td><td>₹${r}</td></tr>`;
+    }
+
+    function modifyGroupDiscount() {
+      if (STATE.groupDiscounts.length > 0) {
+        const last = STATE.groupDiscounts[STATE.groupDiscounts.length - 1];
+        last.rate = document.getElementById('gd_rate').value;
+        const rows = document.querySelectorAll('#gdTable tbody tr');
+        if (rows.length > 0) {
+          rows[rows.length - 1].children[2].innerText = `₹${last.rate}`;
+        }
+      }
+    }
+
+    function saveStockSummary() {
+      const g = document.getElementById('ss_group').value;
+      const tbody = document.querySelector('#ssTable tbody');
+      tbody.innerHTML = '';
+      STATE.items.filter(i => i.group === g).forEach(it => {
+        tbody.innerHTML += `<tr><td>${it.group}</td><td>₹${it.prate}</td><td>${it.qty}</td></tr>`;
+      });
+    }
+
+    /* ================= 2. SUPPLIER MODULE LOGIC ================= */
+    function saveSupplier(isMore) {
+      const name = document.getElementById('sup_name').value.trim();
+      if (!name) return;
+      const sup = {
+        name: name,
+        address: document.getElementById('sup_address').value,
+        phone: document.getElementById('sup_phone').value,
+        pan: document.getElementById('sup_pan').value,
+        balance: parseFloat(document.getElementById('sup_balance').value) || 0
+      };
+      STATE.suppliers.push(sup);
+      if (isMore) {
+        document.getElementById('supplierForm').reset();
+      } else {
+        closeModal('newSupplierModal');
+        navTo('supplierDetailsScreen');
+      }
+    }
+
+    function cancelSupplierEntry() {
+      document.getElementById('supplierForm').reset();
+      closeModal('newSupplierModal');
+      navTo('supplierDetailsScreen');
+    }
+
+    function displaySupplierBalanceList() {
+      const tbody = document.querySelector('#supplierBalanceTable tbody');
+      tbody.innerHTML = '';
+      STATE.suppliers.forEach(s => {
+        tbody.innerHTML += `<tr><td>${s.name}</td><td>${s.address}</td><td>₹${s.balance.toFixed(2)}</td></tr>`;
+      });
+      document.getElementById('supplierBalanceOutput').classList.remove('d-none');
+    }
+
+    function openSupplierListModal() {
+      const tbody = document.querySelector('#supListTable tbody');
+      tbody.innerHTML = '';
+      STATE.suppliers.forEach((s, idx) => {
+        tbody.innerHTML += `<tr onclick="selectSupplierForModify(${idx})" style="cursor:pointer">
+          <td>${s.name}</td><td>${s.address}</td><td>${s.phone}</td><td>${s.pan}</td><td>₹${s.balance}</td>
+        </tr>`;
+      });
+      openModal('supplierListModal');
+    }
+
+    let selectedSupplierIndex = -1;
+    function selectSupplierForModify(idx) {
+      selectedSupplierIndex = idx;
+      const s = STATE.suppliers[idx];
+      document.getElementById('m_sup_name').value = s.name;
+      document.getElementById('m_sup_address').value = s.address;
+    }
+
+    function modifySupplier() {
+      if (selectedSupplierIndex >= 0 && STATE.suppliers[selectedSupplierIndex]) {
+        STATE.suppliers[selectedSupplierIndex].name = document.getElementById('m_sup_name').value;
+        STATE.suppliers[selectedSupplierIndex].address = document.getElementById('m_sup_address').value;
+      }
+      closeModal('supplierListModal');
+      navTo('supplierDetailsScreen');
+    }
+
+    function saveSupplierSaleSheet() {
+      const tbody = document.querySelector('#sssTable tbody');
+      tbody.innerHTML = '';
+      STATE.items.forEach(it => {
+        tbody.innerHTML += `<tr><td>${it.name}</td><td>₹${it.mrp}</td></tr>`;
+      });
+    }
+
+    function saveItemStockList() {
+      const tbody = document.querySelector('#islTable tbody');
+      tbody.innerHTML = '';
+      STATE.items.forEach(it => {
+        tbody.innerHTML += `<tr><td>${it.barcode}</td><td>${it.name}</td><td>${it.company}</td><td>${it.qty}</td><td>₹${it.mrp}</td><td>₹${it.prate}</td><td>${it.gst}%</td></tr>`;
+      });
+    }
+
+    function syncPaySupplierAddress() {
+      const name = document.getElementById('pay_sup').value;
+      const s = STATE.suppliers.find(x => x.name === name);
+      document.getElementById('pay_address').value = s ? s.address : '';
+    }
+
+    function setPayMethod(m) {
+      if (m === 'Card') {
+        const cno = prompt("Enter Card Number:");
+        document.getElementById('pay_particulars').value = cno ? `Payment Card: ${cno}` : 'Payment Card';
+      } else if (m === 'Cheque') {
+        const chq = prompt("Enter Cheque Number:");
+        document.getElementById('pay_particulars').value = chq ? `Payment Cheque: ${chq}` : 'Payment Cheque';
+      } else {
+        document.getElementById('pay_particulars').value = 'Payment Cash';
+      }
+    }
+
+    function savePaymentEntry(isMore) {
+      const sup = document.getElementById('pay_sup').value;
+      const amt = parseFloat(document.getElementById('pay_amount').value) || 0;
+      const part = document.getElementById('pay_particulars').value || 'Payment';
+      STATE.payments.push({ supplier: sup, amount: amt, particulars: part, date: new Date().toISOString().split('T')[0] });
+
+      // Auto update supplier balance
+      const target = STATE.suppliers.find(s => s.name === sup);
+      if (target) {
+        target.balance = Math.max(0, target.balance - amt);
+      }
+
+      // Add to List of Payments table
+      const lop = document.querySelector('#lopTable tbody');
+      if (lop) {
+        lop.innerHTML += `<tr><td>${sup}</td><td>${part}</td><td>₹${amt.toFixed(2)}</td></tr>`;
+      }
+
+      if (isMore) {
+        document.getElementById('pay_amount').value = '';
+        document.getElementById('pay_particulars').value = '';
+      } else {
+        closeModal('paymentEntryModal');
+        navTo('supplierDetailsScreen');
+      }
+    }
+
+    function cancelPaymentEntry() {
+      document.getElementById('pay_amount').value = '';
+      closeModal('paymentEntryModal');
+      navTo('supplierDetailsScreen');
+    }
+
+    function buildSupplierLedger() {
+      const supName = document.getElementById('sled_sup').value;
+      const sup = STATE.suppliers.find(s => s.name === supName);
+      const tbody = document.querySelector('#supplierLedgerTable tbody');
+      tbody.innerHTML = '';
+      if (!sup) return;
+
+      let currentBal = sup.balance;
+      tbody.innerHTML += `<tr><td>Opening Balance</td><td>-</td><td>₹${sup.balance.toFixed(2)}</td><td>₹${currentBal.toFixed(2)}</td></tr>`;
+
+      STATE.payments.filter(p => p.supplier === supName).forEach(p => {
+        currentBal -= p.amount;
+        tbody.innerHTML += `<tr><td>${p.particulars}</td><td>₹${p.amount.toFixed(2)}</td><td>-</td><td>₹${currentBal.toFixed(2)}</td></tr>`;
+      });
+    }
+
+    function buildSupplierGroupStock() {
+      const tbody = document.querySelector('#swgTable tbody');
+      tbody.innerHTML = '';
+      STATE.items.forEach(it => {
+        tbody.innerHTML += `<tr><td>${it.group}</td><td>${it.qty}</td></tr>`;
+      });
+    }
+
+    /* ================= 3. CLIENT MODULE LOGIC ================= */
+    function saveClient(isMore) {
+      const n = document.getElementById('cli_name').value.trim();
+      if (!n) return;
+      const client = {
+        name: n,
+        mobile: document.getElementById('cli_mobile').value,
+        address: document.getElementById('cli_address').value,
+        email: document.getElementById('cli_email').value,
+        balance: parseFloat(document.getElementById('cli_balance').value) || 0,
+        dob: document.getElementById('cli_dob').value,
+        anniv: document.getElementById('cli_anniv').value
+      };
+      STATE.clients.push(client);
+      if (isMore) {
+        document.getElementById('clientForm').reset();
+      } else {
+        closeModal('newClientModal');
+        navTo('clientDetailsScreen');
+      }
+    }
+
+    function cancelClientEntry() {
+      document.getElementById('clientForm').reset();
+      closeModal('newClientModal');
+      navTo('clientDetailsScreen');
+    }
+
+    function displayAllClientsList() {
+      const out = document.getElementById('clientDetailsOutput');
+      document.getElementById('clientOutputHeading').innerText = "All Registered Clients";
+      document.getElementById('clientOutputHead').innerHTML = "<tr><th>Client Name</th><th>Mobile No</th><th>Address</th><th>E-Mail Id</th><th>Opening Balance</th></tr>";
+      const body = document.getElementById('clientOutputBody');
+      body.innerHTML = '';
+      STATE.clients.forEach(c => {
+        body.innerHTML += `<tr><td>${c.name}</td><td>${c.mobile}</td><td>${c.address}</td><td>${c.email}</td><td>₹${c.balance.toFixed(2)}</td></tr>`;
+      });
+      out.classList.remove('d-none');
+    }
+
+    function displayAllClientBalances() {
+      const out = document.getElementById('clientDetailsOutput');
+      document.getElementById('clientOutputHeading').innerText = "All Client Balances";
+      document.getElementById('clientOutputHead').innerHTML = "<tr><th>Client Name</th><th>Address</th><th>Amount (Rupees)</th></tr>";
+      const body = document.getElementById('clientOutputBody');
+      body.innerHTML = '';
+      STATE.clients.forEach(c => {
+        body.innerHTML += `<tr><td>${c.name}</td><td>${c.address}</td><td>₹${c.balance.toFixed(2)}</td></tr>`;
+      });
+      out.classList.remove('d-none');
+    }
+
+    function openClientListModal() {
+      const tbody = document.querySelector('#cliListTable tbody');
+      tbody.innerHTML = '';
+      STATE.clients.forEach((c, idx) => {
+        tbody.innerHTML += `<tr onclick="selectClientForModify(${idx})" style="cursor:pointer">
+          <td>${c.name}</td><td>${c.mobile}</td><td>${c.email}</td><td>${c.address}</td><td>₹${c.balance}</td>
+        </tr>`;
+      });
+      openModal('clientListModal');
+    }
+
+    let selectedClientIndex = -1;
+    function selectClientForModify(idx) {
+      selectedClientIndex = idx;
+      const c = STATE.clients[idx];
+      document.getElementById('m_cli_name').value = c.name;
+      document.getElementById('m_cli_mobile').value = c.mobile;
+    }
+
+    function modifyClient() {
+      if (selectedClientIndex >= 0 && STATE.clients[selectedClientIndex]) {
+        STATE.clients[selectedClientIndex].name = document.getElementById('m_cli_name').value;
+        STATE.clients[selectedClientIndex].mobile = document.getElementById('m_cli_mobile').value;
+      }
+      closeModal('clientListModal');
+      navTo('clientDetailsScreen');
+    }
+
+    function saveReceiptEntry() {
+      const c = document.getElementById('rec_cli').value;
+      const p = document.getElementById('rec_particulars').value;
+      const a = parseFloat(document.getElementById('rec_amount').value) || 0;
+      STATE.receipts.push({ client: c, particulars: p, amount: a, date: new Date().toISOString().split('T')[0] });
+      closeModal('receiptEntryModal');
+      navTo('clientDetailsScreen');
+    }
+
+    function openReceiptListModal() {
+      const tbody = document.querySelector('#receiptTable tbody');
+      tbody.innerHTML = '';
+      STATE.receipts.forEach((r, idx) => {
+        tbody.innerHTML += `<tr onclick="selectReceiptForModify(${idx})" style="cursor:pointer">
+          <td>${r.client}</td><td>${r.particulars}</td><td>₹${r.amount}</td>
+        </tr>`;
+      });
+      openModal('receiptListModal');
+    }
+
+    let selectedReceiptIndex = -1;
+    function selectReceiptForModify(idx) {
+      selectedReceiptIndex = idx;
+      const r = STATE.receipts[idx];
+      document.getElementById('m_rec_part').value = r.particulars;
+      document.getElementById('m_rec_amt').value = r.amount;
+    }
+
+    function modifyReceipt() {
+      if (selectedReceiptIndex >= 0 && STATE.receipts[selectedReceiptIndex]) {
+        STATE.receipts[selectedReceiptIndex].particulars = document.getElementById('m_rec_part').value;
+        STATE.receipts[selectedReceiptIndex].amount = parseFloat(document.getElementById('m_rec_amt').value) || 0;
+      }
+      closeModal('receiptListModal');
+      navTo('clientDetailsScreen');
+    }
+
+    function buildClientLedger() {
+      const cliName = document.getElementById('cled_client').value;
+      const c = STATE.clients.find(x => x.name === cliName);
+      const tbody = document.querySelector('#clientLedgerTable tbody');
+      tbody.innerHTML = '';
+      if (!c) return;
+
+      let bal = c.balance;
+      tbody.innerHTML += `<tr><td>Opening Balance</td><td>-</td><td>₹${c.balance.toFixed(2)}</td><td>₹${bal.toFixed(2)}</td></tr>`;
+
+      STATE.receipts.filter(r => r.client === cliName).forEach(r => {
+        bal -= r.amount;
+        tbody.innerHTML += `<tr><td>${r.particulars}</td><td>₹${r.amount.toFixed(2)}</td><td>-</td><td>₹${bal.toFixed(2)}</td></tr>`;
+      });
+    }
+
+    function buildClientBusiness() {
+      const tbody = document.querySelector('#cbTable tbody');
+      tbody.innerHTML = '';
+      STATE.items.forEach(it => {
+        const tot = it.mrp * it.qty;
+        tbody.innerHTML += `<tr><td>${it.name}</td><td>₹${it.mrp}</td><td>${it.qty}</td><td>₹${tot.toFixed(2)}</td></tr>`;
+      });
+    }
+
+    function searchOccasion() {
+      const occ = document.getElementById('occ_type').value;
+      const tbody = document.querySelector('#occTable tbody');
+      tbody.innerHTML = '';
+      STATE.clients.forEach(c => {
+        tbody.innerHTML += `<tr><td>${c.name}</td><td>${c.address}</td><td>${occ === 'Birthday' ? (c.dob || 'N/A') : (c.anniv || 'N/A')}</td></tr>`;
+      });
+    }
+
+    /* ================= 4. EXPENSE MODULE LOGIC ================= */
+    function askCardNumber(context) {
+      const num = prompt("Enter Card Number:");
+      document.getElementById('exp_part').value = num ? `Paid via Card (${num})` : 'Paid via Card';
+    }
+
+    function askChequeNumber(context) {
+      const num = prompt("Enter Cheque Number:");
+      document.getElementById('exp_part').value = num ? `Paid via Cheque (${num})` : 'Paid via Cheque';
+    }
+
+    function saveExpense(isMore) {
+      const v = document.getElementById('exp_vno').value.trim();
+      if (!v) return;
+      const exp = {
+        vno: v,
+        group: document.getElementById('exp_group').value,
+        particulars: document.getElementById('exp_part').value,
+        date: document.getElementById('exp_date').value || new Date().toISOString().split('T')[0],
+        amount: parseFloat(document.getElementById('exp_amount').value) || 0
+      };
+      STATE.expenses.push(exp);
+
+      if (isMore) {
+        document.getElementById('expenseForm').reset();
+      } else {
+        closeModal('expenseEntryModal');
+        navTo('expenseDetailsScreen');
+      }
+    }
+
+    function cancelExpenseEntry() {
+      document.getElementById('expenseForm').reset();
+      closeModal('expenseEntryModal');
+      navTo('expenseDetailsScreen');
+    }
+
+    function buildGroupExpense() {
+      const g = document.getElementById('gexp_group').value;
+      const tbody = document.querySelector('#gexpTable tbody');
+      tbody.innerHTML = '';
+      STATE.expenses.filter(e => e.group === g).forEach(e => {
+        tbody.innerHTML += `<tr><td>${e.vno}</td><td>${e.date}</td><td>${e.particulars}</td><td>₹${e.amount}</td></tr>`;
+      });
+    }
+
+    function buildAllExpense() {
+      const tbody = document.querySelector('#allexpTable tbody');
+      tbody.innerHTML = '';
+      STATE.expenses.forEach(e => {
+        tbody.innerHTML += `<tr><td>${e.vno}</td><td>${e.date}</td><td>${e.particulars}</td><td>₹${e.amount}</td></tr>`;
+      });
+    }
+
+    /* ================= 5. RECEIVED ITEM LOGIC ================= */
+    function openReceivedItemModal() {
+      document.getElementById('ri_inv').value = Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('ri_date').value = new Date().toISOString().split('T')[0];
+      openModal('receivedItemModal');
+    }
+
+    function saveReceivedTable() {
+      const inv = document.getElementById('ri_inv').value;
+      const sup = document.getElementById('ri_sup').value;
+      const rqty = parseInt(document.getElementById('ri_qty').value) || 1;
+      const tbody = document.querySelector('#riTable tbody');
+      tbody.innerHTML = '';
+
+      STATE.items.forEach(it => {
+        // Product of P. Rate and Qty after deducting GST
+        const baseCost = it.prate * rqty;
+        const discountGST = baseCost - (baseCost * (it.gst / 100));
+        tbody.innerHTML += `<tr>
+          <td>${it.barcode}</td><td>${it.name}</td><td>${it.group}</td><td>${it.company}</td><td>${it.style}</td>
+          <td>${rqty}</td><td>₹${it.prate}</td><td>${it.gst}%</td><td>₹${discountGST.toFixed(2)}</td>
+        </tr>`;
+      });
+    }
+
+    function addReceivedItem(isAdd) {
+      const inv = document.getElementById('ri_inv').value;
+      const sup = document.getElementById('ri_sup').value;
+      const date = document.getElementById('ri_date').value;
+      const rqty = parseInt(document.getElementById('ri_qty').value) || 1;
+
+      STATE.receivedRecords.push({
+        inv: inv,
+        date: date,
+        supplier: sup,
+        qty: rqty,
+        amount: rqty * 2500 // aggregated estimate
+      });
+
+      if (isAdd) {
+        document.getElementById('ri_inv').value = Math.floor(1000 + Math.random() * 9000);
+        document.querySelector('#riTable tbody').innerHTML = '';
+      } else {
+        closeModal('receivedItemModal');
+        navTo('receivedDetailsScreen');
+      }
+    }
+
+    function cancelReceivedItem() {
+      document.querySelector('#riTable tbody').innerHTML = '';
+      closeModal('receivedItemModal');
+      navTo('receivedDetailsScreen');
+    }
+
+    function buildReceivedItemModify() {
+      const tbody = document.querySelector('#rimTable tbody');
+      tbody.innerHTML = '';
+      STATE.receivedRecords.forEach(r => {
+        tbody.innerHTML += `<tr><td>${r.inv}</td><td>${r.date}</td><td>${r.supplier}</td><td>₹${r.amount.toFixed(2)}</td></tr>`;
+      });
+    }
+
+    function buildBillWiseReceived() {
+      const rq = document.getElementById('bwr_qty').value || 1;
+      const tbody = document.querySelector('#bwrTable tbody');
+      tbody.innerHTML = '';
+      STATE.items.forEach(it => {
+        tbody.innerHTML += `<tr><td>${it.group}</td><td>₹${it.prate}</td><td>${it.company}</td><td>${rq}</td></tr>`;
+      });
+    }
+
+    function buildPurchaseReport() {
+      const tbody = document.querySelector('#prTable tbody');
+      tbody.innerHTML = '';
+      STATE.receivedRecords.forEach(r => {
+        const s = STATE.suppliers.find(x => x.name === r.supplier);
+        tbody.innerHTML += `<tr><td>${r.supplier}</td><td>${s ? s.address : 'N/A'}</td><td>${r.inv}</td><td>${r.qty}</td></tr>`;
+      });
+    }
+
+    function buildPurchaseFlow() {
+      const tbody = document.querySelector('#pifTable tbody');
+      tbody.innerHTML = '';
+      STATE.receivedRecords.forEach(r => {
+        tbody.innerHTML += `<tr><td>${r.inv}</td><td>${r.supplier}</td><td>₹${r.amount}</td></tr>`;
+      });
+    }
+
+    /* ================= 6. SALESMAN MODULE LOGIC ================= */
+    function saveSalesman(isMore) {
+      const name = document.getElementById('sm_name').value.trim();
+      if (!name) return;
+      const sm = {
+        name: name,
+        address: document.getElementById('sm_address').value,
+        phone: document.getElementById('sm_phone').value,
+        comm: parseFloat(document.getElementById('sm_comm').value) || 0
+      };
+      STATE.salesmen.push(sm);
+
+      if (isMore) {
+        document.getElementById('salesmanForm').reset();
+      } else {
+        closeModal('salesmanEntryModal');
+        navTo('salesmanDetailsScreen');
+      }
+    }
+
+    function cancelSalesmanEntry() {
+      document.getElementById('salesmanForm').reset();
+      closeModal('salesmanEntryModal');
+      navTo('salesmanDetailsScreen');
+    }
+
+    function openListSalesmanModal() {
+      buildSalesmanList();
+      openModal('listSalesmanModal');
+    }
+
+    function buildSalesmanList() {
+      const tbody = document.querySelector('#smListTable tbody');
+      tbody.innerHTML = '';
+      STATE.salesmen.forEach(sm => {
+        tbody.innerHTML += `<tr><td>${sm.name}</td><td>${sm.address}</td><td>₹${sm.comm}</td></tr>`;
+      });
+    }
+
+    function modifySalesmanList() {
+      const name = document.getElementById('m_sm_name').value;
+      const addr = document.getElementById('m_sm_addr').value;
+      if (STATE.salesmen.length > 0) {
+        STATE.salesmen[0].name = name || STATE.salesmen[0].name;
+        STATE.salesmen[0].address = addr || STATE.salesmen[0].address;
+      }
+      buildSalesmanList();
+    }
+
+    function buildGivenBusiness() {
+      const tbody = document.querySelector('#gbTable tbody');
+      tbody.innerHTML = '';
+      STATE.bills.forEach(b => {
+        tbody.innerHTML += `<tr><td>${b.date}</td><td>₹${b.amount.toFixed(2)}</td></tr>`;
+      });
+    }
+
+    /* ================= 7. BILLING TERMINAL LOGIC ================= */
+    function openBillsModal() {
+      document.getElementById('bill_no').value = Math.floor(10000 + Math.random() * 90000);
+      openModal('billsModal');
+    }
+
+    function saveBillsRow() {
+      const sqty = parseInt(document.getElementById('bill_sqty').value) || 1;
+      const tbody = document.querySelector('#billTable tbody');
+      tbody.innerHTML = '';
+
+      STATE.items.forEach(it => {
+        // Product of MRP and Qty including GST
+        const gross = it.mrp * sqty;
+        const total = gross + (gross * (it.gst / 100));
+        tbody.innerHTML += `<tr>
+          <td>${it.barcode}</td><td>${it.name}</td><td>${sqty}</td><td>₹${it.mrp}</td><td>${it.gst}%</td><td>₹${total.toFixed(2)}</td>
+        </tr>`;
+      });
+    }
+
+    function modifyBillsRow() {
+      const sqty = parseInt(document.getElementById('bill_sqty').value) || 1;
+      const rows = document.querySelectorAll('#billTable tbody tr');
+      rows.forEach(r => {
+        r.children[2].innerText = sqty;
+      });
+    }
+
+    function saveAndAddBill(isAdd) {
+      const bno = document.getElementById('bill_no').value;
+      const sm = document.getElementById('bill_sm').value;
+      const sqty = parseInt(document.getElementById('bill_sqty').value) || 1;
+      
+      let tot = 0;
+      STATE.items.forEach(it => {
+        const gross = it.mrp * sqty;
+        tot += gross + (gross * (it.gst / 100));
+      });
+
+      STATE.bills.push({
+        billNo: bno,
+        salesman: sm,
+        date: new Date().toISOString().split('T')[0],
+        amount: tot,
+        qty: sqty
+      });
+
+      if (isAdd) {
+        document.getElementById('bill_no').value = Math.floor(10000 + Math.random() * 90000);
+        document.querySelector('#billTable tbody').innerHTML = '';
+      } else {
+        closeModal('billsModal');
+        navTo('billingDetailsScreen');
+      }
+    }
+
+    function cancelBillsForm() {
+      document.querySelector('#billTable tbody').innerHTML = '';
+      closeModal('billsModal');
+      navTo('billingDetailsScreen');
+    }
+
+    function printBillTable() {
+      const content = document.getElementById('billTable').outerHTML;
+      const bno = document.getElementById('bill_no').value || 'Bill';
+      const printArea = document.getElementById('printArea');
+      printArea.innerHTML = `<h3>Tax Invoice #${bno}</h3><hr/>` + content;
+      window.print();
+    }
+
+    function buildBillModify() {
+      const tbody = document.querySelector('#bmTable tbody');
+      tbody.innerHTML = '';
+      STATE.bills.forEach(b => {
+        tbody.innerHTML += `<tr><td>${b.date}</td><td>${b.salesman}</td><td>₹${b.amount.toFixed(2)}</td></tr>`;
+      });
+    }
+
+    function showBillDetailsAction() {
+      closeModal('showBillDetailsModal');
+      openBillsModal();
+      saveBillsRow();
+    }
+
+    /* ================= 8. INVENTORY REPORTS ================= */
+    function buildGroupWiseItemStock() {
+      const g = document.getElementById('gwis_group').value;
+      const tbody = document.querySelector('#gwisTable tbody');
+      tbody.innerHTML = '';
+
+      let opening = 0;
+      let receiving = 0;
+      let sale = 0;
+
+      STATE.items.filter(i => i.group === g).forEach(i => opening += i.qty);
+      STATE.receivedRecords.forEach(r => receiving += r.qty);
+      STATE.bills.forEach(b => sale += b.qty);
+
+      // Closing Qty formula: Opening + Receiving - Sales
+      const closing = opening + receiving - sale;
+
+      tbody.innerHTML = `<tr>
+        <td>${g}</td>
+        <td>${opening}</td>
+        <td>${receiving}</td>
+        <td>${sale}</td>
+        <td><strong>${closing}</strong></td>
+      </tr>`;
+    }
+  </script>
+</body>
+</html>
