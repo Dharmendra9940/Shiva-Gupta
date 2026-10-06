@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Asset Management Tool</title>
+
+    <link rel="stylesheet" href="Domain.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <span>📦</span>
+            AssetPro
+        </div>
+
+        <nav>
+            <button class="nav-btn active" onclick="showSection('dashboard')">
+                📊 Dashboard
+            </button>
+
+            <button class="nav-btn" onclick="showSection('assets')">
+                💻 Assets
+            </button>
+
+            <button class="nav-btn" onclick="showSection('addAsset')">
+                ➕ Add Asset
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <p>Asset Management</p>
+            <small>Version 1.0</small>
+        </div>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <!-- Header -->
+        <header class="header">
+
+            <div>
+                <h1 id="pageTitle">Dashboard</h1>
+                <p>Manage and track your company assets</p>
+            </div>
+
+            <button class="add-btn" onclick="showSection('addAsset')">
+                + Add Asset
+            </button>
+
+        </header>
+
+
+        <!-- ================= DASHBOARD ================= -->
+
+        <section id="dashboard" class="section active">
+
+            <div class="cards">
+
+                <div class="card">
+                    <div class="card-icon blue">💻</div>
+                    <div>
+                        <h3>Total Assets</h3>
+                        <h2 id="totalAssets">0</h2>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon green">✅</div>
+                    <div>
+                        <h3>Available</h3>
+                        <h2 id="availableAssets">0</h2>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon orange">👤</div>
+                    <div>
+                        <h3>Assigned</h3>
+                        <h2 id="assignedAssets">0</h2>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon red">🔧</div>
+                    <div>
+                        <h3>Maintenance</h3>
+                        <h2 id="maintenanceAssets">0</h2>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon purple">💰</div>
+                    <div>
+                        <h3>Total Value</h3>
+                        <h2 id="totalValue">₹0</h2>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- Recent Assets -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+                    <h2>Recent Assets</h2>
+
+                    <button onclick="showSection('assets')" class="view-btn">
+                        View All
+                    </button>
+                </div>
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th><b>Asset ID</b></th>
+                                <th><b>Asset Name</b></th>
+                                <th><b>Category</b></th>
+                                <th><b>Assigned To</b></th>
+                                <th><b>Status</b></th>
+                                <th><b>Value</b></th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="recentAssetsTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= ASSETS ================= -->
+
+        <section id="assets" class="section">
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <h2>All Assets</h2>
+
+                    <div class="search-box">
+
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="Search assets..."
+                            onkeyup="searchAssets()"
+                        >
+
+                        <select id="statusFilter" onchange="searchAssets()">
+
+                            <option value="">All Status</option>
+                            <option value="Available">Available</option>
+                            <option value="Assigned">Assigned</option>
+                            <option value="Maintenance">Maintenance</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th><b>Asset ID</b></th>
+                                <th><b>Name</b></th>
+                                <th><b>Category</b></th>
+                                <th><b>Serial Number</b></th>
+                                <th><b>Assigned To</b></th>
+                                <th><b>Purchase Date</b></th>
+                                <th><b>Value</b></th>
+                                <th><b>Status</b></th>
+                                <th><b>Actions</b></th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="assetTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= ADD ASSET ================= -->
+
+        <section id="addAsset" class="section">
+
+            <div class="form-container">
+
+                <div class="form-header">
+                    <h2 id="formTitle">Add New Asset</h2>
+                    <p>Enter the asset Details</p>
+                </div>
+
+
+                <form id="assetForm">
+
+                    <input type="hidden" id="editId">
+
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label>Asset Name *</label>
+
+                            <input
+                                type="text"
+                                id="assetName"
+                                placeholder=""
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>Category *</label>
+
+                            <select id="category" required>
+
+                                <option value="">Select Category</option>
+                                <option value="Laptop">Laptop</option>
+                                <option value="Desktop">Desktop</option>
+                                <option value="Monitor">Monitor</option>
+                                <option value="Printer">Printer</option>
+                                <option value="Mobile">Mobile</option>
+                                <option value="Furniture">Furniture</option>
+                                <option value="Vehicle">Vehicle</option>
+                                <option value="Other">Other</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>Serial Number *</label>
+
+                            <input
+                                type="text"
+                                id="serialNumber"
+                                placeholder=""
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>Assigned To</label>
+
+                            <input
+                                type="text"
+                                id="assignedTo"
+                                placeholder=""
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>Department</label>
+
+                            <input
+                                type="text"
+                                id="department"
+                                placeholder=""
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>Purchase Date *</label>
+
+                            <input
+                                type="date"
+                                id="purchaseDate"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>Purchase Value (₹) *</label>
+
+                            <input
+                                type="number"
+                                id="value"
+                                placeholder=""
+                                min="0"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>Status *</label>
+
+                            <select id="status" required>
+
+                                <option value="Available">
+                                    Available
+                                </option>
+
+                                <option value="Assigned">
+                                    Assigned
+                                </option>
+
+                                <option value="Maintenance">
+                                    Maintenance
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group full">
+
+                            <label>Description</label>
+
+                            <textarea
+                                id="description"
+                                rows="4"
+                                placeholder=""
+                            ></textarea>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-buttons">
+
+                        <button
+                            type="submit"
+                            class="save-btn"
+                        >
+                            💾 Save Asset
+                        </button>
+
+                        <button
+                            type="button"
+                            class="cancel-btn"
+                            onclick="resetForm()"
+                        >
+                            Cancel
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- JavaScript -->
+    <script src="Vat.js"></script>
+
+</body>
+</html>
