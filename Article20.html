@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn: Log In or Sign Up</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        linkedin: {
+                            blue: '#0a66c2',
+                            darkblue: '#004182',
+                            hover: '#e8f3ff',
+                            bg: '#f3f2ef',
+                            text: '#191919',
+                            muted: '#666666'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar and animations */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="font-sans text-slate-800 bg-slate-100 min-h-full flex flex-col antialiased">
+
+    <!-- Navigation Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 h-13 flex items-center justify-between">
+            <!-- Left: Logo & Search -->
+            <div class="flex items-center space-x-2">
+                <a href="#" onclick="switchTab('feed')" class="flex items-center text-linkedin-blue font-bold text-3xl tracking-tighter">
+                    <i class="fab fa-linkedin bg-linkedin-blue text-white rounded p-1 text-2xl"></i>
+                </a>
+                <div class="relative hidden md:block">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                        <i class="fas fa-search text-sm"></i>
+                    </span>
+                    <input type="text" id="globalSearchInput" placeholder="Search" class="bg-slate-100 text-sm rounded-md pl-9 pr-4 py-2 w-64 focus:w-80 transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-linkedin-blue focus:bg-white border border-transparent focus:border-slate-300">
+                </div>
+            </div>
+
+            <!-- Right: Navigation Icons & Profile -->
+            <nav class="flex items-center space-x-1 sm:space-x-6">
+                <button onclick="switchTab('feed')" class="nav-btn flex flex-col items-center text-slate-500 hover:text-slate-900 px-2 py-1 relative active-tab text-linkedin-blue" data-tab="feed">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="text-xs mt-0.5 hidden sm:block">Home</span>
+                    <span class="absolute bottom-0 w-full h-0.5 bg-slate-900 hidden"></span>
+                </button>
+                <button onclick="switchTab('network')" class="nav-btn flex flex-col items-center text-slate-500 hover:text-slate-900 px-2 py-1 relative" data-tab="network">
+                    <i class="fas fa-user-friends text-xl"></i>
+                    <span class="text-xs mt-0.5 hidden sm:block">My Network</span>
+                    <span id="networkBadge" class="absolute top-0 right-2 bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.2 hidden">2</span>
+                </button>
+                <button onclick="switchTab('jobs')" class="nav-btn flex flex-col items-center text-slate-500 hover:text-slate-900 px-2 py-1 relative" data-tab="jobs">
+                    <i class="fas fa-briefcase text-xl"></i>
+                    <span class="text-xs mt-0.5 hidden sm:block">Jobs</span>
+                </button>
+                <button onclick="switchTab('messaging')" class="nav-btn flex flex-col items-center text-slate-500 hover:text-slate-900 px-2 py-1 relative" data-tab="messaging">
+                    <i class="fas fa-comment-dots text-xl"></i>
+                    <span class="text-xs mt-0.5 hidden sm:block">Messaging</span>
+                </button>
+                <button onclick="switchTab('notifications')" class="nav-btn flex flex-col items-center text-slate-500 hover:text-slate-900 px-2 py-1 relative" data-tab="notifications">
+                    <i class="fas fa-bell text-xl"></i>
+                    <span class="text-xs mt-0.5 hidden sm:block">Notifications</span>
+                </button>
+                
+                <!-- User Profile Dropdown / Tab Switcher -->
+                <div class="border-l border-slate-200 pl-4 ml-2">
+                    <button onclick="switchTab('profile')" class="flex flex-col items-center text-slate-600 hover:text-slate-900">
+                        <img id="headerUserAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Profile" class="w-6 h-6 rounded-full object-cover">
+                        <span class="text-xs mt-0.5 hidden sm:block">Me <i class="fas fa-caret-down text-[10px]"></i></span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Application Container -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6">
+
+        <!-- ==================== FEED TAB ==================== -->
+        <div id="tab-feed" class="tab-content active">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left Sidebar: Profile Card & Quick Links -->
+                <div class="lg:col-span-3 space-y-4">
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden text-center">
+                        <div class="h-16 bg-slate-300 relative bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=400&q=80')">
+                            <img id="sidebarUserAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" alt="User" class="w-16 h-16 rounded-full border-2 border-white object-cover absolute left-1/2 transform -translate-x-1/2 top-8 shadow-md">
+                        </div>
+                        <div class="pt-10 pb-4 px-4 border-b border-slate-100">
+                            <h2 id="sidebarUserName" class="font-semibold text-slate-900 hover:underline cursor-pointer" onclick="switchTab('profile')">Sarah Jenkins</h2>
+                            <p id="sidebarUserHeadline" class="text-xs text-slate-500 mt-1 leading-relaxed">Senior Frontend Engineer at TechCorp | React & UI/UX Specialist</p>
+                        </div>
+                        <div class="p-3 text-left text-xs space-y-2 hover:bg-slate-50 cursor-pointer transition" onclick="switchTab('profile')">
+                            <div class="flex justify-between text-slate-500">
+                                <span>Profile viewers</span>
+                                <span class="text-linkedin-blue font-semibold">342</span>
+                            </div>
+                            <div class="flex justify-between text-slate-500">
+                                <span>Post impressions</span>
+                                <span class="text-linkedin-blue font-semibold">1,489</span>
+                            </div>
+                        </div>
+                        <div class="p-3 border-t border-slate-100 text-left text-xs hover:bg-slate-50 cursor-pointer transition">
+                            <div class="flex items-center text-slate-600 font-medium">
+                                <i class="fas fa-bookmark text-slate-400 mr-2"></i> Saved items
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Recent Groups & Hashtags -->
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-4 text-xs space-y-3">
+                        <div class="font-semibold text-slate-900">Recent</div>
+                        <div class="text-slate-600 hover:text-linkedin-blue cursor-pointer flex items-center space-x-2"><i class="fas fa-hashtag text-slate-400"></i><span>reactjs</span></div>
+                        <div class="text-slate-600 hover:text-linkedin-blue cursor-pointer flex items-center space-x-2"><i class="fas fa-hashtag text-slate-400"></i><span>tailwindcss</span></div>
+                        <div class="text-slate-600 hover:text-linkedin-blue cursor-pointer flex items-center space-x-2"><i class="fas fa-hashtag text-slate-400"></i><span>webdevelopment</span></div>
+                    </div>
+                </div>
+
+                <!-- Central Main Feed -->
+                <div class="lg:col-span-6 space-y-4">
+                    <!-- Create Post Box -->
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-4">
+                        <div class="flex items-center space-x-3">
+                            <img id="feedUserAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="User" class="w-12 h-12 rounded-full object-cover">
+                            <button onclick="openPostModal()" class="flex-grow text-left bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold px-4 py-3 rounded-full border border-slate-300 transition">
+                                Start a post
+                            </button>
+                        </div>
+                        <div class="flex justify-between items-center mt-3 pt-2 px-2">
+                            <button onclick="openPostModal()" class="flex items-center space-x-2 text-slate-600 hover:bg-slate-100 px-3 py-2 rounded-md font-medium text-sm transition">
+                                <i class="fas fa-image text-blue-500 text-lg"></i><span>Media</span>
+                            </button>
+                            <button onclick="openPostModal()" class="flex items-center space-x-2 text-slate-600 hover:bg-slate-100 px-3 py-2 rounded-md font-medium text-sm transition">
+                                <i class="fas fa-calendar-alt text-amber-500 text-lg"></i><span>Event</span>
+                            </button>
+                            <button onclick="openPostModal()" class="flex items-center space-x-2 text-slate-600 hover:bg-slate-100 px-3 py-2 rounded-md font-medium text-sm transition">
+                                <i class="fas fa-newspaper text-rose-500 text-lg"></i><span>Write article</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Feed Separator / Divider -->
+                    <div class="flex items-center my-2">
+                        <div class="flex-grow border-t border-slate-300"></div>
+                        <span class="mx-3 text-xs text-slate-500 font-medium">Sort by: <span class="text-slate-800 font-semibold cursor-pointer">Top <i class="fas fa-caret-down"></i></span></span>
+                        <div class="flex-grow border-t border-slate-300"></div>
+                    </div>
+
+                    <!-- Dynamic Post Feed List Container -->
+                    <div id="postsContainer" class="space-y-4">
+                        <!-- Posts injected via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Right Sidebar: LinkedIn News & Recommendations -->
+                <div class="lg:col-span-3 space-y-4">
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-semibold text-slate-900 text-sm">LinkedIn News</h3>
+                            <i class="fas fa-info-circle text-slate-400 text-xs" title="Top stories"></i>
+                        </div>
+                        <ul class="space-y-3 text-xs">
+                            <li>
+                                <a href="#" class="font-semibold text-slate-800 hover:underline block leading-snug">Tech hiring trends for Q3 2026</a>
+                                <span class="text-[10px] text-slate-500">2d ago • 14,238 readers</span>
+                            </li>
+                            <li>
+                                <a href="#" class="font-semibold text-slate-800 hover:underline block leading-snug">Remote work evolution in startups</a>
+                                <span class="text-[10px] text-slate-500">1d ago • 8,912 readers</span>
+                            </li>
+                            <li>
+                                <a href="#" class="font-semibold text-slate-800 hover:underline block leading-snug">AI tools transforming design workflows</a>
+                                <span class="text-[10px] text-slate-500">3d ago • 22,541 readers</span>
+                            </li>
+                            <li>
+                                <a href="#" class="font-semibold text-slate-800 hover:underline block leading-snug">Sustainable energy funding spikes</a>
+                                <span class="text-[10px] text-slate-500">4h ago • 5,420 readers</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== MY NETWORK TAB ==================== -->
+        <div id="tab-network" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Manage Network Sidebar -->
+                <div class="lg:col-span-3">
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-4 space-y-2 text-sm">
+                        <div class="font-semibold text-slate-900 mb-3">Manage my network</div>
+                        <a href="#" class="flex items-center justify-between p-2 hover:bg-slate-100 rounded text-slate-600 font-medium">
+                            <span class="flex items-center"><i class="fas fa-user-friends w-6 text-slate-500"></i> Connections</span>
+                            <span id="connectionsCount" class="text-xs font-semibold bg-slate-200 px-2 py-0.5 rounded-full">148</span>
+                        </a>
+                        <a href="#" class="flex items-center justify-between p-2 hover:bg-slate-100 rounded text-slate-600 font-medium">
+                            <span class="flex items-center"><i class="fas fa-address-book w-6 text-slate-500"></i> Following & Followers</span>
+                        </a>
+                        <a href="#" class="flex items-center justify-between p-2 hover:bg-slate-100 rounded text-slate-600 font-medium">
+                            <span class="flex items-center"><i class="fas fa-users w-6 text-slate-500"></i> Groups</span>
+                        </a>
+                        <a href="#" class="flex items-center justify-between p-2 hover:bg-slate-100 rounded text-slate-600 font-medium">
+                            <span class="flex items-center"><i class="fas fa-calendar-alt w-6 text-slate-500"></i> Events</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Main Network Content -->
+                <div class="lg:col-span-9 space-y-4">
+                    <!-- Invitations Section -->
+                    <div id="invitationsSection" class="bg-white rounded-lg border border-slate-200 shadow-sm p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-semibold text-slate-900 text-sm">Invitations (<span id="invitationCountBadge">2</span>)</h3>
+                            <button class="text-xs text-linkedin-blue font-semibold hover:underline">See all</button>
+                        </div>
+                        <div id="invitationsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- People You May Know Section -->
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-semibold text-slate-900 text-sm">People you may know based on your profile</h3>
+                            <button class="text-xs text-linkedin-blue font-semibold hover:underline">See all</button>
+                        </div>
+                        <div id="suggestionsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== JOBS TAB ==================== -->
+        <div id="tab-jobs" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Job Preferences Sidebar -->
+                <div class="lg:col-span-3 space-y-4">
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-4 space-y-2 text-sm">
+                        <a href="#" class="flex items-center space-x-3 p-2 hover:bg-slate-100 rounded text-slate-700 font-semibold">
+                            <i class="fas fa-bookmark text-linkedin-blue w-5"></i><span>Preferences</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 p-2 hover:bg-slate-100 rounded text-slate-700 font-semibold">
+                            <i class="fas fa-list-check text-slate-500 w-5"></i><span>My Jobs</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 p-2 hover:bg-slate-100 rounded text-slate-700 font-semibold">
+                            <i class="fas fa-file-alt text-slate-500 w-5"></i><span>Application tracker</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Job Search & Listings -->
+                <div class="lg:col-span-9 space-y-4">
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-4">
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <div class="relative flex-grow">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fas fa-search"></i></span>
+                                <input type="text" id="jobSearchInput" placeholder="Search by title, skill, or company" class="bg-slate-100 w-full pl-9 pr-4 py-2 text-sm rounded-md border border-transparent focus:border-slate-300 focus:bg-white focus:outline-none">
+                            </div>
+                            <div class="relative flex-grow">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fas fa-map-marker-alt"></i></span>
+                                <input type="text" id="jobLocationInput" placeholder="City, state, or remote" class="bg-slate-100 w-full pl-9 pr-4 py-2 text-sm rounded-md border border-transparent focus:border-slate-300 focus:bg-white focus:outline-none">
+                            </div>
+                            <button onclick="filterJobs()" class="bg-linkedin-blue text-white font-semibold px-5 py-2 rounded-md hover:bg-linkedin-darkblue transition text-sm">Search</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-4">
+                        <h3 class="font-semibold text-slate-900 text-sm mb-4">Recommended for you</h3>
+                        <div id="jobListingsContainer" class="space-y-4 divide-y divide-slate-100">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== MESSAGING TAB ==================== -->
+        <div id="tab-messaging" class="tab-content">
+            <div class="bg-white rounded-lg border border-slate-200 shadow-sm grid grid-cols-1 md:grid-cols-12 h-[650px] overflow-hidden">
+                <!-- Conversations List -->
+                <div class="md:col-span-4 border-r border-slate-200 flex flex-col h-full">
+                    <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                        <h3 class="font-bold text-slate-900 text-base">Messaging</h3>
+                        <div class="space-x-2 text-slate-600">
+                            <button class="hover:bg-slate-200 p-1.5 rounded-full"><i class="fas fa-edit"></i></button>
+                            <button class="hover:bg-slate-200 p-1.5 rounded-full"><i class="fas fa-ellipsis-h"></i></button>
+                        </div>
+                    </div>
+                    <div class="p-2 border-b border-slate-100">
+                        <input type="text" placeholder="Search messages" class="w-full bg-slate-100 text-sm rounded px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-linkedin-blue">
+                    </div>
+                    <div id="conversationsList" class="flex-grow overflow-y-auto divide-y divide-slate-100">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Active Chat Box -->
+                <div class="md:col-span-8 flex flex-col h-full bg-slate-50">
+                    <!-- Chat Header -->
+                    <div id="activeChatHeader" class="p-3 border-b border-slate-200 bg-white flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <img id="activeChatAvatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" alt="" class="w-10 h-10 rounded-full object-cover">
+                            <div>
+                                <h4 id="activeChatName" class="font-semibold text-slate-900 text-sm">Alex Morgan</h4>
+                                <span class="text-xs text-emerald-600 font-medium flex items-center"><span class="w-2 h-2 bg-emerald-500 rounded-full inline-block mr-1"></span> Active now</span>
+                            </div>
+                        </div>
+                        <div class="text-slate-500 space-x-3">
+                            <button class="hover:text-slate-800"><i class="fas fa-phone-alt"></i></button>
+                            <button class="hover:text-slate-800"><i class="fas fa-video"></i></button>
+                            <button class="hover:text-slate-800"><i class="fas fa-info-circle"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Chat Message Area -->
+                    <div id="chatMessagesContainer" class="flex-grow p-4 overflow-y-auto space-y-3 bg-slate-50">
+                        <!-- Messages populated dynamically -->
+                    </div>
+
+                    <!-- Chat Input Area -->
+                    <div class="p-3 bg-white border-t border-slate-200">
+                        <form id="chatForm" onsubmit="sendChatMessage(event)" class="flex flex-col space-y-2">
+                            <input type="text" id="chatMessageInput" placeholder="Write a message..." class="bg-slate-100 border border-slate-200 rounded-md p-2 text-sm focus:outline-none focus:ring-1 focus:ring-linkedin-blue focus:bg-white">
+                            <div class="flex justify-between items-center">
+                                <div class="flex space-x-3 text-slate-500 text-lg">
+                                    <button type="button" class="hover:text-linkedin-blue"><i class="fas fa-image"></i></button>
+                                    <button type="button" class="hover:text-linkedin-blue"><i class="fas fa-paperclip"></i></button>
+                                    <button type="button" class="hover:text-linkedin-blue"><i class="far fa-smile"></i></button>
+                                </div>
+                                <button type="submit" class="bg-linkedin-blue text-white font-semibold px-4 py-1.5 rounded-full text-xs hover:bg-linkedin-darkblue transition">Send</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== NOTIFICATIONS TAB ==================== -->
+        <div id="tab-notifications" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-3">
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-4 text-sm space-y-2">
+                        <h3 class="font-semibold text-slate-900 mb-2">Manage your notifications</h3>
+                        <a href="#" class="text-linkedin-blue font-medium block hover:underline">View settings</a>
+                    </div>
+                </div>
+                <div class="lg:col-span-9">
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm divide-y divide-slate-100">
+                        <div class="p-4 flex items-center justify-between bg-blue-50/50 hover:bg-slate-50 transition">
+                            <div class="flex items-center space-x-3">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" alt="" class="w-12 h-12 rounded-full object-cover">
+                                <p class="text-sm text-slate-800"><span class="font-semibold">Alex Morgan</span> commented on your post: "Great insights on frontend scalability!"</p>
+                            </div>
+                            <span class="text-xs text-slate-400 whitespace-nowrap ml-4">2h ago</span>
+                        </div>
+                        <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition">
+                            <div class="flex items-center space-x-3">
+                                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" alt="" class="w-12 h-12 rounded-full object-cover">
+                                <p class="text-sm text-slate-800"><span class="font-semibold">Emily Watson</span> accepted your connection invitation.</p>
+                            </div>
+                            <span class="text-xs text-slate-400 whitespace-nowrap ml-4">1d ago</span>
+                        </div>
+                        <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-full bg-linkedin-blue text-white flex items-center justify-center font-bold text-lg"><i class="fas fa-briefcase"></i></div>
+                                <p class="text-sm text-slate-800">Your job alert for <span class="font-semibold">Senior React Developer</span> has 5 new matching listings.</p>
+                            </div>
+                            <span class="text-xs text-slate-400 whitespace-nowrap ml-4">2d ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== PROFILE TAB ==================== -->
+        <div id="tab-profile" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-9 space-y-4">
+                    <!-- Profile Card -->
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="h-32 bg-slate-300 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=1000&q=80')">
+                            <button onclick="openEditProfileModal()" class="absolute top-3 right-3 bg-white p-2 rounded-full text-slate-700 hover:bg-slate-100 shadow"><i class="fas fa-pen text-sm"></i></button>
+                        </div>
+                        <div class="px-6 pb-6 pt-0 relative">
+                            <img id="profileUserAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="" class="w-32 h-32 rounded-full border-4 border-white object-cover absolute -top-16 left-6 shadow-md">
+                            <div class="flex justify-end pt-4 space-x-2">
+                                <button class="bg-linkedin-blue text-white px-4 py-1.5 rounded-full font-semibold text-sm hover:bg-linkedin-darkblue transition">Open to</button>
+                                <button class="border border-linkedin-blue text-linkedin-blue px-4 py-1.5 rounded-full font-semibold text-sm hover:bg-blue-50 transition">Add profile section</button>
+                                <button onclick="openEditProfileModal()" class="border border-slate-400 text-slate-600 px-4 py-1.5 rounded-full font-semibold text-sm hover:bg-slate-50 transition">Edit profile</button>
+                            </div>
+                            <div class="mt-4">
+                                <h1 id="profileUserName" class="text-2xl font-bold text-slate-900">Sarah Jenkins</h1>
+                                <p id="profileUserHeadline" class="text-slate-700 text-base mt-1">Senior Frontend Engineer at TechCorp | React & UI/UX Specialist</p>
+                                <p id="profileUserLocation" class="text-slate-500 text-sm mt-1">San Francisco Bay Area · <a href="#" class="text-linkedin-blue font-semibold hover:underline">Contact info</a></p>
+                                <p class="text-linkedin-blue text-sm font-semibold mt-2"><span id="profileConnectionsCount">148</span> connections</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- About Section -->
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-6">
+                        <h2 class="text-lg font-bold text-slate-900 mb-2">About</h2>
+                        <p id="profileUserAbout" class="text-sm text-slate-700 leading-relaxed">
+                            Passionate frontend architect with over 8 years of experience building scalable web applications using React, TypeScript, and Tailwind CSS. Dedicated to crafting intuitive user experiences and high-performance web components.
+                        </p>
+                    </div>
+
+                    <!-- Experience Section -->
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-bold text-slate-900">Experience</h2>
+                            <button class="hover:bg-slate-100 p-2 rounded-full text-slate-600"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <div class="space-y-6">
+                            <div class="flex space-x-4">
+                                <div class="w-12 h-12 bg-slate-200 rounded flex items-center justify-center font-bold text-slate-600"><i class="fas fa-laptop-code"></i></div>
+                                <div>
+                                    <h3 class="font-semibold text-slate-900 text-sm">Senior Frontend Engineer</h3>
+                                    <p class="text-xs text-slate-600">TechCorp · Full-time</p>
+                                    <p class="text-xs text-slate-400">Jan 2023 - Present · 3 yrs 2 mos</p>
+                                    <p class="text-xs text-slate-700 mt-2">Leading the core design system team and migrating legacy apps to React 19 with Tailwind CSS.</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-4">
+                                <div class="w-12 h-12 bg-slate-200 rounded flex items-center justify-center font-bold text-slate-600"><i class="fas fa-code"></i></div>
+                                <div>
+                                    <h3 class="font-semibold text-slate-900 text-sm">UI/UX Developer</h3>
+                                    <p class="text-xs text-slate-600">WebSolutions Inc · Full-time</p>
+                                    <p class="text-xs text-slate-400">Mar 2020 - Dec 2022 · 2 yrs 10 mos</p>
+                                    <p class="text-xs text-slate-700 mt-2">Developed responsive web interfaces and optimized client-side rendering performance by 40%.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side Profile Analytics -->
+                <div class="lg:col-span-3 space-y-4">
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-4 text-sm space-y-3">
+                        <h3 class="font-semibold text-slate-900">Analytics</h3>
+                        <div class="flex items-center space-x-3 text-xs text-slate-600">
+                            <i class="fas fa-eye text-slate-400 text-base"></i>
+                            <div><span class="font-semibold text-slate-900">342 profile views</span><br>Discover who's viewing your profile.</div>
+                        </div>
+                        <div class="flex items-center space-x-3 text-xs text-slate-600">
+                            <i class="fas fa-chart-line text-slate-400 text-base"></i>
+                            <div><span class="font-semibold text-slate-900">1,489 post impressions</span><br>Check out your top performing posts.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Create Post Modal -->
+    <div id="postModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden animate-fadeIn">
+            <div class="p-4 border-b border-slate-200 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <img id="modalUserAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="" class="w-10 h-10 rounded-full object-cover">
+                    <div>
+                        <h3 id="modalUserName" class="font-semibold text-slate-900 text-sm">Sarah Jenkins</h3>
+                        <span class="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded flex items-center w-fit mt-0.5"><i class="fas fa-globe-americas mr-1"></i> Anyone</span>
+                    </div>
+                </div>
+                <button onclick="closePostModal()" class="text-slate-400 hover:text-slate-700 p-2"><i class="fas fa-times text-lg"></i></button>
+            </div>
+            <div class="p-4">
+                <textarea id="postContentInput" rows="5" placeholder="What do you want to talk about?" class="w-full focus:outline-none resize-none text-slate-800 placeholder-slate-400 text-base"></textarea>
+                <div class="mt-3">
+                    <input type="text" id="postImageInput" placeholder="Image URL (optional e.g., https://images.unsplash.com/...)" class="w-full text-xs bg-slate-100 border border-slate-200 rounded p-2 focus:outline-none focus:ring-1 focus:ring-linkedin-blue">
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-200 flex justify-between items-center bg-slate-50">
+                <div class="flex space-x-3 text-slate-500 text-lg">
+                    <button class="hover:text-linkedin-blue"><i class="fas fa-image"></i></button>
+                    <button class="hover:text-linkedin-blue"><i class="fas fa-hashtag"></i></button>
+                    <button class="hover:text-linkedin-blue"><i class="far fa-smile"></i></button>
+                </div>
+                <button onclick="handleCreatePost()" class="bg-linkedin-blue text-white font-semibold px-5 py-1.5 rounded-full text-sm hover:bg-linkedin-darkblue transition">Post</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <div class="p-4 border-b border-slate-200 flex justify-between items-center">
+                <h3 class="font-bold text-slate-900 text-base">Edit intro</h3>
+                <button onclick="closeEditProfileModal()" class="text-slate-400 hover:text-slate-700 p-2"><i class="fas fa-times text-lg"></i></button>
+            </div>
+            <div class="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Name</label>
+                    <input type="text" id="editNameInput" class="w-full bg-slate-100 border border-slate-200 rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-linkedin-blue">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Headline</label>
+                    <input type="text" id="editHeadlineInput" class="w-full bg-slate-100 border border-slate-200 rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-linkedin-blue">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Avatar Image URL</label>
+                    <input type="text" id="editAvatarInput" class="w-full bg-slate-100 border border-slate-200 rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-linkedin-blue">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Location</label>
+                    <input type="text" id="editLocationInput" class="w-full bg-slate-100 border border-slate-200 rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-linkedin-blue">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">About</label>
+                    <textarea id="editAboutInput" rows="3" class="w-full bg-slate-100 border border-slate-200 rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-linkedin-blue"></textarea>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-200 flex justify-end space-x-2 bg-slate-50">
+                <button onclick="closeEditProfileModal()" class="px-4 py-1.5 rounded text-sm font-semibold text-slate-600 hover:bg-slate-200">Cancel</button>
+                <button onclick="saveProfileChanges()" class="bg-linkedin-blue text-white font-semibold px-5 py-1.5 rounded text-sm hover:bg-linkedin-darkblue transition">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application JavaScript Logic -->
+    <script>
+        // Default Mock State & LocalStorage Synchronization
+        let currentUser = JSON.parse(localStorage.getItem('linkedin_user')) || {
+            name: "Sarah Jenkins",
+            headline: "Senior Frontend Engineer at TechCorp | React & UI/UX Specialist",
+            avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+            location: "San Francisco Bay Area",
+            about: "Passionate frontend architect with over 8 years of experience building scalable web applications using React, TypeScript, and Tailwind CSS. Dedicated to crafting intuitive user experiences and high-performance web components.",
+            connectionsCount: 148
+        };
+
+        let posts = JSON.parse(localStorage.getItem('linkedin_posts')) || [
+            {
+                id: 1,
+                author: "Alex Morgan",
+                headline: "Staff Engineer at CloudScale",
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+                time: "2h",
+                content: "Just shipped our new micro-frontend architecture using Vite and Module Federation. The build speeds are incredible! What tools are you using for large-scale enterprise apps?",
+                image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
+                likes: 42,
+                liked: false,
+                comments: [
+                    { author: "Emily Watson", text: "We switched to Vite last month and never looked back!" },
+                    { author: "Sarah Jenkins", text: "Awesome work Alex! Modularization is definitely the way forward." }
+                ]
+            },
+            {
+                id: 2,
+                author: "Emily Watson",
+                headline: "Lead Product Designer at CreativePulse",
+                avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80",
+                time: "5h",
+                content: "Design systems aren't just component libraries; they are a shared vocabulary between engineering and product. Here are 3 tips to align your teams effectively...",
+                image: "",
+                likes: 128,
+                liked: true,
+                comments: [
+                    { author: "Alex Morgan", text: "Spot on! Communication is key." }
+                ]
+            }
+        ];
+
+        let networkInvitations = JSON.parse(localStorage.getItem('linkedin_invitations')) || [
+            { id: 1, name: "David Kim", headline: "Senior Backend Developer at Stripe", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80" },
+            { id: 2, name: "Jessica Taylor", headline: "Product Manager at Google", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80" }
+        ];
+
+        let suggestions = JSON.parse(localStorage.getItem('linkedin_suggestions')) || [
+            { id: 101, name: "Michael Chang", headline: "DevOps Engineer at Amazon", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80" },
+            { id: 102, name: "Sophia Martinez", headline: "UX Researcher at Meta", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80" },
+            { id: 103, name: "James Wilson", headline: "Full Stack Developer at Netflix", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=200&q=80" }
+        ];
+
+        let jobListings = [
+            { id: 1, title: "Senior React Developer", company: "TechCorp", location: "San Francisco, CA (Remote)", type: "Full-time", logo: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=100&q=80" },
+            { id: 2, title: "Frontend Architect", company: "InnovateLabs", location: "New York, NY", type: "Full-time", logo: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=100&q=80" },
+            { id: 3, title: "UI/UX Designer", company: "PixelCraft", location: "Austin, TX (Hybrid)", type: "Contract", logo: "https://images.unsplash.com/photo-1572021335469-31706a17aaef?auto=format&fit=crop&w=100&q=80" },
+            { id: 4, title: "Full Stack Software Engineer", company: "CloudScale", location: "Seattle, WA", type: "Full-time", logo: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=100&q=80" }
+        ];
+
+        let conversations = [
+            { id: 1, name: "Alex Morgan", headline: "Staff Engineer at CloudScale", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80", lastMessage: "Awesome work Alex! Modularization is definitely the way forward.", time: "2h" },
+            { id: 2, name: "Emily Watson", headline: "Lead Product Designer", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80", lastMessage: "We switched to Vite last month and never looked back!", time: "1d" }
+        ];
+
+        let activeConversationId = 1;
+        let messages = {
+            1: [
+                { sender: "Alex Morgan", text: "Hey Sarah! Saw your latest post on micro-frontends.", time: "10:30 AM" },
+                { sender: "Sarah Jenkins", text: "Hi Alex! Yes, it's been a game changer for our team.", time: "10:32 AM" },
+                { sender: "Alex Morgan", text: "Awesome work Alex! Modularization is definitely the way forward.", time: "10:35 AM" }
+            ],
+            2: [
+                { sender: "Emily Watson", text: "Hey Sarah, are we still on for the design sync tomorrow?", time: "Yesterday" },
+                { sender: "Sarah Jenkins", text: "Yes absolutely! Looking forward to reviewing the new tokens.", time: "Yesterday" }
+            ]
+        };
+
+        // DOM Initialization on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            updateUserDataUI();
+            renderPosts();
+            renderInvitations();
+            renderSuggestions();
+            renderJobListings(jobListings);
+            renderConversations();
+            renderChatMessages(activeConversationId);
+        });
+
+        // Tab Navigation Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-linkedin-blue', 'active-tab');
+                if(btn.getAttribute('data-tab') === tabId) {
+                    btn.classList.add('text-linkedin-blue', 'active-tab');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Update User Profile info across components
+        function updateUserDataUI() {
+            document.getElementById('headerUserAvatar').src = currentUser.avatar;
+            document.getElementById('sidebarUserAvatar').src = currentUser.avatar;
+            document.getElementById('sidebarUserName').innerText = currentUser.name;
+            document.getElementById('sidebarUserHeadline').innerText = currentUser.headline;
+            document.getElementById('feedUserAvatar').src = currentUser.avatar;
+            document.getElementById('modalUserAvatar').src = currentUser.avatar;
+            document.getElementById('modalUserName').innerText = currentUser.name;
+            document.getElementById('profileUserAvatar').src = currentUser.avatar;
+            document.getElementById('profileUserName').innerText = currentUser.name;
+            document.getElementById('profileUserHeadline').innerText = currentUser.headline;
+            document.getElementById('profileUserLocation').innerText = currentUser.location + " · Contact info";
+            document.getElementById('profileUserAbout').innerText = currentUser.about;
+            document.getElementById('profileConnectionsCount').innerText = currentUser.connectionsCount;
+            document.getElementById('connectionsCount').innerText = currentUser.connectionsCount;
+        }
+
+        // Render Posts in Feed
+        function renderPosts() {
+            const container = document.getElementById('postsContainer');
+            container.innerHTML = '';
+            posts.forEach(post => {
+                const postEl = document.createElement('div');
+                postEl.className = 'bg-white rounded-lg border border-slate-200 shadow-sm p-4 space-y-3';
+                postEl.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="flex space-x-3">
+                            <img src="${post.avatar}" alt="" class="w-12 h-12 rounded-full object-cover">
+                            <div>
+                                <h3 class="font-semibold text-slate-900 text-sm hover:underline cursor-pointer">${post.author}</h3>
+                                <p class="text-xs text-slate-500 leading-tight">${post.headline}</p>
+                                <p class="text-[10px] text-slate-400 mt-0.5">${post.time} · <i class="fas fa-globe-americas"></i></p>
+                            </div>
+                        </div>
+                        <button class="text-slate-400 hover:text-slate-700"><i class="fas fa-ellipsis-h"></i></button>
+                    </div>
+                    <p class="text-sm text-slate-800 whitespace-pre-line leading-relaxed">${post.content}</p>
+                    ${post.image ? `<div class="rounded-lg overflow-hidden border border-slate-100"><img src="${post.image}" alt="" class="w-full max-h-96 object-cover"></div>` : ''}
+                    <div class="flex justify-between text-xs text-slate-500 pt-1 border-b border-slate-100 pb-2">
+                        <span><i class="fas fa-thumbs-up text-linkedin-blue"></i> ${post.likes}</span>
+                        <span class="cursor-pointer hover:underline" onclick="toggleComments(${post.id})">${post.comments.length} comments</span>
+                    </div>
+                    <div class="flex justify-between pt-1">
+                        <button onclick="likePost(${post.id})" class="flex items-center space-x-2 flex-1 justify-center py-2 hover:bg-slate-100 rounded-md font-semibold text-sm transition ${post.liked ? 'text-linkedin-blue' : 'text-slate-600'}">
+                            <i class="${post.liked ? 'fas' : 'far'} fa-thumbs-up text-base"></i><span>Like</span>
+                        </button>
+                        <button onclick="toggleComments(${post.id})" class="flex items-center space-x-2 flex-1 justify-center py-2 hover:bg-slate-100 rounded-md text-slate-600 font-semibold text-sm transition">
+                            <i class="far fa-comment-alt text-base"></i><span>Comment</span>
+                        </button>
+                        <button class="flex items-center space-x-2 flex-1 justify-center py-2 hover:bg-slate-100 rounded-md text-slate-600 font-semibold text-sm transition">
+                            <i class="fas fa-share text-base"></i><span>Share</span>
+                        </button>
+                    </div>
+                    <div id="comments-section-${post.id}" class="hidden pt-3 border-t border-slate-100 space-y-3">
+                        <div class="flex space-x-2">
+                            <input type="text" id="comment-input-${post.id}" placeholder="Add a comment..." class="bg-slate-100 border border-slate-200 rounded-full px-4 py-1.5 text-xs flex-grow focus:outline-none focus:ring-1 focus:ring-linkedin-blue">
+                            <button onclick="addComment(${post.id})" class="bg-linkedin-blue text-white px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-linkedin-darkblue">Post</button>
+                        </div>
+                        <div class="space-y-2">
+                            ${post.comments.map(c => `
+                                <div class="bg-slate-50 p-2.5 rounded-lg text-xs space-y-1">
+                                    <span class="font-semibold text-slate-900">${c.author}</span>
+                                    <p class="text-slate-700">${c.text}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(postEl);
+            });
+            localStorage.setItem('linkedin_posts', JSON.stringify(posts));
+        }
+
+        // Post Creation Handlers
+        function openPostModal() { document.getElementById('postModal').classList.remove('hidden'); }
+        function closePostModal() { document.getElementById('postModal').classList.add('hidden'); }
+
+        function handleCreatePost() {
+            const content = document.getElementById('postContentInput').value.trim();
+            const image = document.getElementById('postImageInput').value.trim();
+            if(!content) return;
+
+            const newPost = {
+                id: Date.now(),
+                author: currentUser.name,
+                headline: currentUser.headline,
+                avatar: currentUser.avatar,
+                time: "Just now",
+                content: content,
+                image: image,
+                likes: 0,
+                liked: false,
+                comments: []
+            };
+
+            posts.unshift(newPost);
+            renderPosts();
+            document.getElementById('postContentInput').value = '';
+            document.getElementById('postImageInput').value = '';
+            closePostModal();
+        }
+
+        function likePost(id) {
+            const post = posts.find(p => p.id === id);
+            if(post) {
+                if(post.liked) {
+                    post.likes -= 1;
+                    post.liked = false;
+                } else {
+                    post.likes += 1;
+                    post.liked = true;
+                }
+                renderPosts();
+            }
+        }
+
+        function toggleComments(id) {
+            const sec = document.getElementById(`comments-section-${id}`);
+            sec.classList.toggle('hidden');
+        }
+
+        function addComment(id) {
+            const input = document.getElementById(`comment-input-${id}`);
+            const text = input.value.trim();
+            if(!text) return;
+            const post = posts.find(p => p.id === id);
+            if(post) {
+                post.comments.push({ author: currentUser.name, text: text });
+                input.value = '';
+                renderPosts();
+                document.getElementById(`comments-section-${id}`).classList.remove('hidden');
+            }
+        }
+
+        // Network Tab Functionality
+        function renderInvitations() {
+            const container = document.getElementById('invitationsContainer');
+            const badge = document.getElementById('invitationCountBadge');
+            const networkBadge = document.getElementById('networkBadge');
+            badge.innerText = networkInvitations.length;
+            if(networkInvitations.length > 0) {
+                networkBadge.innerText = networkInvitations.length;
+                networkBadge.classList.remove('hidden');
+            } else {
+                networkBadge.classList.add('hidden');
+                document.getElementById('invitationsSection').classList.add('hidden');
+            }
+            container.innerHTML = '';
+            networkInvitations.forEach(inv => {
+                const card = document.createElement('div');
+                card.className = 'border border-slate-200 rounded-lg p-4 flex flex-col items-center text-center space-y-3 bg-white shadow-sm';
+                card.innerHTML = `
+                    <img src="${inv.avatar}" alt="" class="w-20 h-20 rounded-full object-cover">
+                    <div>
+                        <h4 class="font-semibold text-slate-900 text-sm">${inv.name}</h4>
+                        <p class="text-xs text-slate-500 mt-1">${inv.headline}</p>
+                    </div>
+                    <div class="flex space-x-2 w-full pt-2">
+                        <button onclick="ignoreInvitation(${inv.id})" class="flex-1 py-1.5 border border-slate-400 rounded-full text-slate-700 font-semibold text-xs hover:bg-slate-100 transition">Ignore</button>
+                        <button onclick="acceptInvitation(${inv.id})" class="flex-1 py-1.5 bg-linkedin-blue text-white rounded-full font-semibold text-xs hover:bg-linkedin-darkblue transition">Accept</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            localStorage.setItem('linkedin_invitations', JSON.stringify(networkInvitations));
+        }
+
+        function acceptInvitation(id) {
+            networkInvitations = networkInvitations.filter(i => i.id !== id);
+            currentUser.connectionsCount += 1;
+            updateUserDataUI();
+            renderInvitations();
+        }
+
+        function ignoreInvitation(id) {
+            networkInvitations = networkInvitations.filter(i => i.id !== id);
+            renderInvitations();
+        }
+
+        function renderSuggestions() {
+            const container = document.getElementById('suggestionsContainer');
+            container.innerHTML = '';
+            suggestions.forEach(s => {
+                const card = document.createElement('div');
+                card.className = 'border border-slate-200 rounded-lg p-4 flex flex-col items-center text-center space-y-3 bg-white shadow-sm';
+                card.innerHTML = `
+                    <img src="${s.avatar}" alt="" class="w-20 h-20 rounded-full object-cover">
+                    <div>
+                        <h4 class="font-semibold text-slate-900 text-sm">${s.name}</h4>
+                        <p class="text-xs text-slate-500 mt-1">${s.headline}</p>
+                    </div>
+                    <button onclick="connectSuggestion(${s.id})" id="connect-btn-${s.id}" class="w-full py-1.5 border border-linkedin-blue text-linkedin-blue rounded-full font-semibold text-xs hover:bg-blue-50 transition flex items-center justify-center space-x-1">
+                        <i class="fas fa-user-plus"></i><span>Connect</span>
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+            localStorage.setItem('linkedin_suggestions', JSON.stringify(suggestions));
+        }
+
+        function connectSuggestion(id) {
+            const btn = document.getElementById(`connect-btn-${id}`);
+            btn.innerHTML = `<i class="fas fa-check"></i><span>Pending</span>`;
+            btn.className = "w-full py-1.5 bg-slate-200 text-slate-600 rounded-full font-semibold text-xs cursor-default";
+        }
+
+        // Jobs Tab Functionality
+        function renderJobListings(list) {
+            const container = document.getElementById('jobListingsContainer');
+            container.innerHTML = '';
+            list.forEach(job => {
+                const item = document.createElement('div');
+                item.className = 'pt-4 first:pt-0 flex items-start justify-between';
+                item.innerHTML = `
+                    <div class="flex space-x-3">
+                        <img src="${job.logo}" alt="" class="w-12 h-12 rounded object-cover border border-slate-200">
+                        <div>
+                            <h4 class="font-semibold text-linkedin-blue text-sm hover:underline cursor-pointer">${job.title}</h4>
+                            <p class="text-xs text-slate-800 font-medium">${job.company}</p>
+                            <p class="text-xs text-slate-500 mt-0.5"><i class="fas fa-map-marker-alt"></i> ${job.location}</p>
+                            <p class="text-[10px] text-emerald-600 font-semibold mt-1 bg-emerald-50 px-2 py-0.5 rounded w-fit"><i class="fas fa-bolt"></i> Actively hiring</p>
+                        </div>
+                    </div>
+                    <button onclick="applyJob(this)" class="px-4 py-1.5 border border-linkedin-blue text-linkedin-blue font-semibold rounded-full text-xs hover:bg-blue-50 transition">Apply</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function filterJobs() {
+            const query = document.getElementById('jobSearchInput').value.toLowerCase();
+            const loc = document.getElementById('jobLocationInput').value.toLowerCase();
+            const filtered = jobListings.filter(j => 
+                j.title.toLowerCase().includes(query) || j.company.toLowerCase().includes(query)
+            );
+            renderJobListings(filtered);
+        }
+
+        function applyJob(btn) {
+            btn.innerText = "Applied";
+            btn.className = "px-4 py-1.5 bg-slate-200 text-slate-600 font-semibold rounded-full text-xs cursor-default";
+        }
+
+        // Messaging Functionality
+        function renderConversations() {
+            const container = document.getElementById('conversationsList');
+            container.innerHTML = '';
+            conversations.forEach(conv => {
+                const item = document.createElement('div');
+                item.className = `p-3 flex items-center space-x-3 cursor-pointer hover:bg-slate-100 transition ${conv.id === activeConversationId ? 'bg-slate-100 border-l-4 border-linkedin-blue' : ''}`;
+                item.onclick = () => selectConversation(conv.id);
+                item.innerHTML = `
+                    <img src="${conv.avatar}" alt="" class="w-12 h-12 rounded-full object-cover">
+                    <div class="flex-grow min-w-0">
+                        <div class="flex justify-between items-baseline">
+                            <h4 class="font-semibold text-slate-900 text-sm truncate">${conv.name}</h4>
+                            <span class="text-[10px] text-slate-400">${conv.time}</span>
+                        </div>
+                        <p class="text-xs text-slate-500 truncate mt-0.5">${conv.lastMessage}</p>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function selectConversation(id) {
+            activeConversationId = id;
+            renderConversations();
+            renderChatMessages(id);
+            const conv = conversations.find(c => c.id === id);
+            if(conv) {
+                document.getElementById('activeChatName').innerText = conv.name;
+                document.getElementById('activeChatAvatar').src = conv.avatar;
+            }
+        }
+
+        function renderChatMessages(id) {
+            const container = document.getElementById('chatMessagesContainer');
+            container.innerHTML = '';
+            const thread = messages[id] || [];
+            thread.forEach(msg => {
+                const isMe = msg.sender === currentUser.name;
+                const bubble = document.createElement('div');
+                bubble.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-1`;
+                bubble.innerHTML = `
+                    <div class="max-w-[75%] rounded-lg px-4 py-2 text-sm shadow-sm ${isMe ? 'bg-linkedin-blue text-white rounded-br-none' : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none'}">
+                        ${msg.text}
+                    </div>
+                    <span class="text-[10px] text-slate-400 px-1">${msg.time}</span>
+                `;
+                container.appendChild(bubble);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendChatMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatMessageInput');
+            const text = input.value.trim();
+            if(!text) return;
+
+            if(!messages[activeConversationId]) messages[activeConversationId] = [];
+            messages[activeConversationId].push({
+                sender: currentUser.name,
+                text: text,
+                time: "Just now"
+            });
+
+            const conv = conversations.find(c => c.id === activeConversationId);
+            if(conv) {
+                conv.lastMessage = text;
+                conv.time = "Just now";
+            }
+
+            input.value = '';
+            renderChatMessages(activeConversationId);
+            renderConversations();
+        }
+
+        // Profile Edit Modals
+        function openEditProfileModal() {
+            document.getElementById('editNameInput').value = currentUser.name;
+            document.getElementById('editHeadlineInput').value = currentUser.headline;
+            document.getElementById('editAvatarInput').value = currentUser.avatar;
+            document.getElementById('editLocationInput').value = currentUser.location;
+            document.getElementById('editAboutInput').value = currentUser.about;
+            document.getElementById('editProfileModal').classList.remove('hidden');
+        }
+
+        function closeEditProfileModal() {
+            document.getElementById('editProfileModal').classList.add('hidden');
+        }
+
+        function saveProfileChanges() {
+            currentUser.name = document.getElementById('editNameInput').value.trim() || currentUser.name;
+            currentUser.headline = document.getElementById('editHeadlineInput').value.trim() || currentUser.headline;
+            currentUser.avatar = document.getElementById('editAvatarInput').value.trim() || currentUser.avatar;
+            currentUser.location = document.getElementById('editLocationInput').value.trim() || currentUser.location;
+            currentUser.about = document.getElementById('editAboutInput').value.trim() || currentUser.about;
+
+            localStorage.setItem('linkedin_user', JSON.stringify(currentUser));
+            updateUserDataUI();
+            closeEditProfileModal();
+        }
+    </script>
+</body>
+</html>
