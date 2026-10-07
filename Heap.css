@@ -1,0 +1,783 @@
+/* =========================
+   GLOBAL
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: navy;
+    color:blue;
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+    height: 62px;
+    background:orangered;
+    border-bottom: 1px solid white;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 6%;
+
+    position: sticky;
+    top: 0;
+
+    z-index: 1000;
+}
+
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.linkedin-logo {
+    width: 34px;
+    height: 34px;
+
+    background: green;
+    color: white;
+
+    border-radius: 4px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 23px;
+    font-weight: bold;
+}
+
+
+.search-box {
+    width: 280px;
+    height: 38px;
+
+    background: #eef3f8;
+
+    border-radius: 5px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 12px;
+}
+
+
+.search-box i {
+    color: #555;
+}
+
+
+.search-box input {
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    width: 100%;
+
+    padding-left: 10px;
+
+    font-size: 15px;
+}
+
+
+/* =========================
+   NAV MENU
+========================= */
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+
+.nav-item {
+    height: 62px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    color:yellow;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    border-bottom: 2px solid transparent;
+}
+
+
+.nav-item i {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+
+.nav-item:hover,
+.nav-item.active {
+    color:blue;
+    border-bottom-color:blue;
+}
+
+
+.nav-profile {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+
+.nav-profile img {
+    width: 30px;
+    height: 30px;
+
+    border-radius: 50%;
+}
+
+
+/* =========================
+   MAIN LAYOUT
+========================= */
+
+.container {
+    max-width: 1200px;
+
+    margin: 25px auto;
+
+    display: grid;
+
+    grid-template-columns: 230px 1fr 300px;
+
+    gap: 20px;
+}
+
+
+/* =========================
+   LEFT SIDEBAR
+========================= */
+
+.profile-card,
+.sidebar-card,
+.news-card,
+.suggestion-card {
+    background:skyblue
+    
+    ;
+
+    border-radius: 8px;
+
+    border: 1px solid blue;
+
+    overflow: hidden;
+}
+
+
+.cover {
+    height: 60px;
+
+    background: linear-gradient(
+        135deg,
+        red,
+        gold
+    );
+}
+
+
+.profile-picture {
+    width: 80px;
+    height: 80px;
+
+    border-radius: 50%;
+
+    border: 4px solid purple;
+
+    display: block;
+
+    margin: -40px auto 10px;
+}
+
+
+.profile-card h2 {
+    text-align: center;
+
+    font-size: 18px;
+}
+
+
+.profile-card > p {
+    text-align: center;
+
+    color:purple;
+
+    font-size: 13px;
+
+    padding: 4px 15px;
+}
+
+
+.location {
+    font-size: 12px !important;
+}
+
+
+.profile-card hr {
+    border: none;
+
+    border-top: 1px solid blue;
+
+    margin: 15px 0;
+}
+
+
+.profile-stat {
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 8px 15px;
+
+    font-size: 12px;
+}
+
+
+.profile-stat strong {
+    color: #0a66c2;
+}
+
+
+.sidebar-card {
+    margin-top: 15px;
+
+    padding: 18px;
+}
+
+
+.sidebar-card h3 {
+    margin-bottom: 15px;
+}
+
+
+.sidebar-card p {
+    margin: 12px 0;
+
+    color:blue;
+
+    cursor: pointer;
+}
+
+
+/* =========================
+   CREATE POST
+========================= */
+
+.create-post {
+    background: white;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    padding: 15px;
+
+    margin-bottom: 15px;
+}
+
+
+.create-top {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.create-top img {
+    width: 48px;
+    height: 48px;
+
+    border-radius: 50%;
+}
+
+
+.create-top input {
+    flex: 1;
+
+    border: 1px solid blue;
+
+    border-radius: 25px;
+
+    padding: 13px 18px;
+
+    outline: none;
+
+    font-size: 14px;
+}
+
+
+.create-top input:focus {
+    border-color: #0a66c2;
+}
+
+
+.post-options {
+    display: flex;
+
+    justify-content: space-around;
+
+    margin-top: 15px;
+}
+
+
+.post-options button {
+    border: none;
+
+    background: transparent;
+
+    padding: 10px;
+
+    cursor: pointer;
+
+    color: #555;
+
+    font-weight: bold;
+}
+
+
+.post-options button:hover {
+    background: #f3f3f3;
+
+    border-radius: 5px;
+}
+
+
+.post-options i {
+    color: #0a66c2;
+
+    margin-right: 5px;
+}
+
+
+.publish-btn {
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 10px;
+
+    background: #0a66c2;
+
+    border: none;
+
+    border-radius: 20px;
+
+    color: white;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+/* =========================
+   POSTS
+========================= */
+
+.post {
+    background: white;
+
+    border: 1px solid greenyellow;
+
+    border-radius: 8px;
+
+    padding: 18px;
+
+    margin-bottom: 15px;
+}
+
+
+.post-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.post-header img {
+    width: 50px;
+    height: 50px;
+
+    border-radius: 50%;
+}
+
+
+.post-header h3 {
+    font-size: 15px;
+}
+
+
+.post-header p {
+    font-size: 12px;
+
+    color:orangered;
+
+    margin-top: 3px;
+}
+
+
+.post-header small {
+    color:orangered;
+}
+
+
+.more-btn {
+    margin-left: auto;
+
+    border: none;
+
+    background: none;
+
+    cursor: pointer;
+
+    font-size: 18px;
+}
+
+
+.post-content {
+    margin: 18px 0;
+
+    line-height: 1.6;
+
+    font-size: 14px;
+}
+
+
+.post-content strong {
+    color: #0a66c2;
+}
+
+
+.post-stats {
+    display: flex;
+
+    justify-content: space-between;
+
+    color:blue;
+
+    font-size: 12px;
+
+    padding-bottom: 10px;
+
+    border-bottom: 1px solid #ddd;
+}
+
+
+.post-actions {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    margin-top: 5px;
+}
+
+
+.post-actions button {
+    padding: 12px 5px;
+
+    border: none;
+
+    background: white;
+
+    cursor: pointer;
+
+    color:blue;
+
+    font-weight: bold;
+}
+
+
+.post-actions button:hover {
+    background:lightblue;
+
+    border-radius: 5px;
+}
+
+
+.post-actions button.liked {
+    color: #0a66c2;
+}
+
+
+.comment-section {
+    margin-top: 10px;
+}
+
+
+.comment-section input {
+    width: 100%;
+
+    padding: 10px 15px;
+
+    border: 1px solid #aaa;
+
+    border-radius: 20px;
+
+    outline: none;
+}
+
+
+.user-comment {
+    background: #f3f2ef;
+
+    border-radius: 8px;
+
+    padding: 8px 12px;
+
+    margin-top: 8px;
+
+    font-size: 13px;
+}
+
+
+/* =========================
+   RIGHT SIDEBAR
+========================= */
+
+.news-card,
+.suggestion-card {
+    padding: 18px;
+}
+
+
+.news-card h2,
+.suggestion-card h2 {
+    font-size: 17px;
+
+    margin-bottom: 15px;
+}
+
+
+.news-item {
+    margin-bottom: 18px;
+}
+
+
+.news-item strong {
+    display: block;
+
+    font-size: 13px;
+
+    margin-bottom: 5px;
+}
+
+
+.news-item small {
+    color:blue;
+}
+
+
+.show-more {
+    border: none;
+
+    background: transparent;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+.person {
+    display: flex;
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+}
+
+
+.person img {
+    width: 50px;
+    height: 50px;
+
+    border-radius: 50%;
+}
+
+
+.person strong {
+    font-size: 14px;
+}
+
+
+.person p {
+    font-size: 12px;
+
+    color:rgb(95, 6, 49);
+
+    margin: 4px 0;
+}
+
+
+.person button {
+    padding: 6px 15px;
+
+    border: 1px solid purple;
+
+    color: #0a66c2;
+
+    background: white;
+
+    border-radius: 18px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+    text-align: center;
+
+    color:hotpink;
+
+    font-size: 11px;
+
+    line-height: 2;
+
+    margin-top: 20px;
+}
+
+
+/* =========================
+   RESPONSIVE DESIGN
+========================= */
+
+@media (max-width: 1000px) {
+
+    .container {
+        grid-template-columns: 200px 1fr;
+    }
+
+    .right-sidebar {
+        display: none;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .navbar {
+        padding: 0 10px;
+    }
+
+
+    .search-box {
+        width: 150px;
+    }
+
+
+    .nav-menu {
+        gap: 10px;
+    }
+
+
+    .nav-item span,
+    .nav-profile span,
+    .nav-profile i {
+        display: none;
+    }
+
+
+    .container {
+        display: block;
+
+        margin: 10px;
+    }
+
+
+    .left-sidebar {
+        display: none;
+    }
+
+
+    .feed {
+        width: 100%;
+    }
+
+
+    .post-actions {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+
+    .post-actions button:last-child {
+        display: none;
+    }
+
+}
+
+
+@media (max-width: 450px) {
+
+    .search-box {
+        width: 110px;
+    }
+
+
+    .nav-menu {
+        gap: 7px;
+    }
+
+
+    .nav-item i {
+        font-size: 17px;
+    }
+
+
+    .linkedin-logo {
+        width: 30px;
+        height: 30px;
+
+        font-size: 20px;
+    }
+
+
+    .post-options {
+        flex-direction: column;
+    }
+
+
+    .post-options button {
+        text-align: left;
+    }
+
+}
