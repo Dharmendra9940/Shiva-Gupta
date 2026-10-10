@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - User Portal</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f3f4f6;
+            --card-bg:yellow;
+            --text: #1f2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 0.5rem 0 1rem 0;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #4b5563;
+        }
+
+        .flash-messages {
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+        .flash-error { color: #dc2626; }
+        .flash-success { color: #16a34a; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Flash Messages Display -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <p class="flash-{{ category }}">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- 1. Welcome Page Section -->
+        <div id="welcome-section" class="form-section active">
+            <h2>Welcome Portal</h2>
+            <p style="margin-bottom: 1.5rem; color: #6b7280;">Please choose an option to continue</p>
+            <button class="btn btn-primary" onclick="showSection('login-section')">Login (Existing User)</button>
+            <button class="btn btn-secondary" onclick="showSection('register-section')">Register (New User)</button>
+        </div>
+
+        <!-- 2. Registration Form Section -->
+        <div id="register-section" class="form-section">
+            <h2>Create Account</h2>
+            <form action="/register" method="POST">
+                <label>User Name</label>
+                <input type="text" name="username" required>
+
+                <label>Address</label>
+                <textarea name="address" rows="2" required></textarea>
+
+                <label>E-Mail ID</label>
+                <input type="email" name="email" required>
+
+                <label>Phone No</label>
+                <input type="tel" name="phone" pattern="[0-9]{10,15}" title="Enter a valid phone number" required>
+
+                <label>Password</label>
+                <input type="password" name="password" required>
+
+                <button type="submit" class="btn btn-primary">Submit & Register</button>
+            </form>
+            <button class="btn btn-secondary" onclick="showSection('welcome-section')">Back to Welcome</button>
+        </div>
+
+        <!-- 3. Login Entry Form Section -->
+        <div id="login-section" class="form-section">
+            <h2>Member Login</h2>
+            <form action="/login" method="POST">
+                <label>User Name</label>
+                <input type="text" name="username" required>
+
+                <label>Password</label>
+                <input type="password" name="password" required>
+
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <button class="btn btn-secondary" onclick="showSection('welcome-section')">Back to Welcome</button>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.form-section');
+            sections.forEach(sec => sec.classList.remove('active'));
+            
+            // Show the target section
+            document.getElementById(sectionId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
