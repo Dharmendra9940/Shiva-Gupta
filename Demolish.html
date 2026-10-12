@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Management Portal</title>
+  <link rel="stylesheet" href="Far.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">S</div>
+        <div>
+          <h2>School-Manage</h2>
+          <small>School Administration</small>
+        </div>
+      </div>
+
+      <p class="nav-label">MAIN MENU</p>
+      <nav>
+        <button class="nav-btn active" data-page="dashboard">▦ Dashboard</button>
+        <button class="nav-btn" data-page="students">♙ Students</button>
+        <button class="nav-btn" data-page="teachers">♧ Teachers</button>
+        <button class="nav-btn" data-page="attendance">✓ Attendance</button>
+        <button class="nav-btn" data-page="fees">₹ Fee Management</button>
+        <button class="nav-btn" data-page="results">▤ Examination Results</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="admin-avatar">AD</div>
+        <div><strong>School Admin</strong><small>Administrator</small></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar" style="background-color: aqua; color: darkblue;" >
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div>
+          <h2 id="pageTitle" style="background-color:aqua ; color: darkblue;" >Dashboard</h2>
+          <p id="today" style="color: darkcyan;"></p>
+        </div>
+        <div class="top-right">
+          <span class="status-dot"></span>
+          <span style="color: darkcyan;"><b>System Online</b></span>
+        </div>
+      </header>
+
+      <div class="content">
+
+        <!-- DASHBOARD -->
+        <section class="page active" id="dashboard">
+          <div class="welcome">
+            <div>
+              <span class="eyebrow" style="color:rgb(9, 9, 85);">SCHOOL OVERVIEW</span>
+              <h1 style="color: darkblue;">Welcome back, Admin! 👋</h1>
+              <p style="color: darkblue;">Here is what's happening at your school today.</p>
+            </div>
+            <div class="welcome-art">🎓</div>
+          </div>
+
+          <div class="stats">
+            <article class="stat-card" style="background-color: gold;color: navy;" >
+              <span class="stat-icon blue">♙</span>
+              <p style="color: darkblue;">Total Students</p>
+              <h2 id="totalStudents">0</h2>
+              <small style="color: darkblue;">Registered students</small>
+            </article>
+            <article class="stat-card" style="background-color: gold;color: navy;">
+              <span class="stat-icon purple">♧</span>
+              <p style="color: darkblue;">Total Teachers</p>
+              <h2 id="totalTeachers">0</h2>
+              <small style="color: darkblue;">Teaching staff</small>
+            </article>
+            <article class="stat-card" style="background-color: gold;color: navy;">
+              <span class="stat-icon green">✓</span>
+              <p style="color: darkblue;">Present Today</p>
+              <h2 id="totalPresent">0</h2>
+              <small style="color: darkblue;">Students marked present</small>
+            </article>
+            <article class="stat-card" style="background-color: gold;color: navy;">
+              <span class="stat-icon orange">₹</span>
+              <p style="color: darkblue;">Pending Fees</p>
+              <h2 id="totalPending">₹0</h2>
+              <small style="color: darkblue;">Outstanding fee balance</small>
+            </article>
+          </div>
+
+          <div class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>Recent Students</h3>
+                <p>Recently registered student records</p>
+              </div>
+              <button class="btn btn-primary"
+                data-goto="students">+ Add Student</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr>
+                  <th>Admission No.</th><th>Name</th>
+                  <th>Class</th><th>Parent Phone</th>
+                </tr></thead>
+                <tbody id="recentStudents"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- STUDENTS -->
+        <section class="page" id="students">
+          <div class="section-heading">
+            <div><h1>Student Management</h1>
+              <p>Register and manage student information.</p></div>
+          </div>
+
+          <form class="panel form-grid" id="studentForm">
+            <h3 class="full">Add New Student</h3>
+            <label>Admission Number
+              <input name="admission" required placeholder="e.g. ADM101">
+            </label>
+            <label>Student Full Name
+              <input name="name" required placeholder="Full name">
+            </label>
+            <label>Class
+              <select name="className" required>
+                <option value="">Select class</option>
+                <option>Nursery</option><option>LKG</option><option>UKG</option>
+                <option>Class 1</option><option>Class 2</option>
+                <option>Class 3</option><option>Class 4</option>
+                <option>Class 5</option><option>Class 6</option>
+                <option>Class 7</option><option>Class 8</option>
+                <option>Class 9</option><option>Class 10</option>
+                <option>Class 11</option><option>Class 12</option>
+              </select>
+            </label>
+            <label>Parent Phone
+              <input name="phone" type="tel" pattern="[0-9]{10}"
+                maxlength="10" required placeholder="10-digit number">
+            </label>
+            <label>Gender
+              <select name="gender" required>
+                <option value="">Select gender</option>
+                <option>Male</option><option>Female</option><option>Other</option>
+              </select>
+            </label>
+            <label>Annual Fee (₹)
+              <input name="fee" type="number" min="0" step="0.01"
+                required placeholder="e.g. 25000">
+            </label>
+            <div class="full form-actions">
+              <button class="btn btn-primary" type="submit">Save Student</button>
+              <button class="btn btn-light" type="reset">Clear Form</button>
+            </div>
+          </form>
+
+          <div class="panel">
+            <div class="panel-heading">
+              <h3>Student Records</h3>
+              <input id="studentSearch" class="search"
+                placeholder="Search students...">
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr>
+                  <th>Admission No.</th><th>Name</th><th>Class</th>
+                  <th>Phone</th><th>Gender</th><th>Annual Fee</th><th>Action</th>
+                </tr></thead>
+                <tbody id="studentTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TEACHERS -->
+        <section class="page" id="teachers">
+          <div class="section-heading">
+            <div><h1>Teacher Management</h1>
+              <p>Maintain your teaching staff directory.</p></div>
+          </div>
+          <form class="panel form-grid" id="teacherForm">
+            <h3 class="full">Add New Teacher</h3>
+            <label>Teacher ID
+              <input name="teacherId" required placeholder="TCH101">
+            </label>
+            <label>Teacher Name
+              <input name="name" required placeholder="Full name">
+            </label>
+            <label>Subject
+              <input name="subject" required placeholder="e.g. Mathematics">
+            </label>
+            <label>Phone
+              <input name="phone" type="tel" pattern="[0-9]{10}"
+                maxlength="10" required placeholder="10-digit number">
+            </label>
+            <div class="full form-actions">
+              <button class="btn btn-primary">Save Teacher</button>
+              <button class="btn btn-light" type="reset">Clear Form</button>
+            </div>
+          </form>
+          <div class="panel">
+            <h3>Teacher Records</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr>
+                  <th>Teacher ID</th><th>Name</th><th>Subject</th>
+                  <th>Phone</th><th>Action</th>
+                </tr></thead>
+                <tbody id="teacherTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ATTENDANCE -->
+        <section class="page" id="attendance">
+          <div class="section-heading">
+            <div><h1>Attendance Management</h1>
+              <p>Record daily student attendance.</p></div>
+          </div>
+          <div class="panel">
+            <div class="panel-heading">
+              <label>Attendance Date
+                <input type="date" id="attendanceDate" required>
+              </label>
+              <button class="btn btn-light" id="loadAttendance" type="button">
+                Load Records
+              </button>
+            </div>
+            <form id="attendanceForm">
+              <div class="table-wrap">
+                <table>
+                  <thead><tr>
+                    <th>Admission No.</th><th>Student Name</th>
+                    <th>Class</th><th>Attendance Status</th>
+                  </tr></thead>
+                  <tbody id="attendanceTable"></tbody>
+                </table>
+              </div>
+              <button class="btn btn-primary" type="submit">
+                Save Attendance
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <!-- FEES -->
+        <section class="page" id="fees">
+          <div class="section-heading">
+            <div><h1>Fee Management</h1>
+              <p>Record payments and review outstanding balances.</p></div>
+          </div>
+          <form class="panel form-grid" id="feeForm">
+            <h3 class="full">Record Fee Payment</h3>
+            <label>Student
+              <select name="admission" id="feeStudent" required>
+                <option value="">Select student</option>
+              </select>
+            </label>
+            <label>Payment Amount (₹)
+              <input name="amount" type="number" min="0.01"
+                step="0.01" required placeholder="Enter amount">
+            </label>
+            <label>Payment Date
+              <input name="date" type="date" required>
+            </label>
+            <label>Payment Mode
+              <select name="mode" required>
+                <option value="">Select mode</option>
+                <option>Cash</option><option>UPI</option>
+                <option>Bank Transfer</option><option>Card</option>
+              </select>
+            </label>
+            <div class="full form-actions">
+              <button class="btn btn-primary">Record Payment</button>
+            </div>
+          </form>
+          <div class="panel">
+            <h3>Fee Status</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr>
+                  <th>Admission No.</th><th>Student</th><th>Annual Fee</th>
+                  <th>Paid</th><th>Pending</th><th>Status</th>
+                </tr></thead>
+                <tbody id="feeTable"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Payment History</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr>
+                  <th>Date</th><th>Student</th><th>Amount</th><th>Mode</th>
+                </tr></thead>
+                <tbody id="paymentTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- RESULTS -->
+        <section class="page" id="results">
+          <div class="section-heading">
+            <div><h1>Examination Results</h1>
+              <p>Enter student marks and calculate percentages.</p></div>
+          </div>
+          <form class="panel form-grid" id="resultForm">
+            <h3 class="full">Enter Examination Marks</h3>
+            <label>Student
+              <select name="admission" id="resultStudent" required>
+                <option value="">Select student</option>
+              </select>
+            </label>
+            <label>Examination
+              <select name="exam" required>
+                <option value="">Select examination</option>
+                <option>Unit Test 1</option><option>Half Yearly</option>
+                <option>Unit Test 2</option><option>Annual Examination</option>
+              </select>
+            </label>
+            <label>Subject
+              <input name="subject" required placeholder="e.g. Science">
+            </label>
+            <label>Maximum Marks
+              <input name="maximum" type="number" min="1"
+                step="0.01" required>
+            </label>
+            <label>Marks Obtained
+              <input name="marks" type="number" min="0"
+                step="0.01" required>
+            </label>
+            <div class="full form-actions">
+              <button class="btn btn-primary">Save Result</button>
+            </div>
+          </form>
+          <div class="panel">
+            <h3>Result Records</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr>
+                  <th>Student</th><th>Examination</th><th>Subject</th>
+                  <th>Marks</th><th>Percentage</th><th>Grade</th><th>Action</th>
+                </tr></thead>
+                <tbody id="resultTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <footer><b>Developed by: Shiva Gupta, Contact Us:9336459940,
+          shivagupta9940gmail.com.</b></footer>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="General.js"></script>
+</body>
+</html>
