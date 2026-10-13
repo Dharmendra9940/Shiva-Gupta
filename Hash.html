@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Management Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.25s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-full overflow-hidden flex flex-col">
+
+    <div id="app" class="flex h-screen overflow-hidden">
+        
+        <!-- Mobile Sidebar Overlay -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden transition-opacity"></div>
+
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-64 bg-slate-900 text-slate-300 flex flex-col transition-transform duration-300 ease-in-out -translate-x-full md:translate-x-0 shadow-xl">
+            <!-- Logo area -->
+            <div class="p-6 flex items-center justify-between border-b border-slate-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/30">
+                        <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-white tracking-wide text-lg">SM Portal</h1>
+                        <p class="text-xs text-slate-400">Management Portal</p>
+                    </div>
+                </div>
+                <button id="closeSidebar" class="md:hidden text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <!-- Nav Links -->
+            <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto custom-scrollbar">
+                <a href="#dashboard" onclick="switchTab('dashboard')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all bg-indigo-600 text-white shadow-md shadow-indigo-600/20" data-target="dashboard">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#students" onclick="switchTab('students')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-all" data-target="students">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                    <span>Students</span>
+                </a>
+                <a href="#teachers" onclick="switchTab('teachers')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-all" data-target="teachers">
+                    <i data-lucide="user-check" class="w-5 h-5"></i>
+                    <span>Teachers</span>
+                </a>
+                <a href="#attendance" onclick="switchTab('attendance')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-all" data-target="attendance">
+                    <i data-lucide="calendar-check" class="w-5 h-5"></i>
+                    <span>Attendance</span>
+                </a>
+                <a href="#fees" onclick="switchTab('fees')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-all" data-target="fees">
+                    <i data-lucide="credit-card" class="w-5 h-5"></i>
+                    <span>Fees & Payments</span>
+                </a>
+                <a href="#notices" onclick="switchTab('notices')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-all" data-target="notices">
+                    <i data-lucide="bell" class="w-5 h-5"></i>
+                    <span>Notice Board</span>
+                </a>
+            </nav>
+
+            <!-- User profile footer -->
+            <div class="p-4 border-t border-slate-800">
+                <div class="flex items-center space-x-3 bg-slate-800/50 p-3 rounded-xl">
+                    <img src="Atom Season Shiva Gupta.jpeg" alt="Admin" class="w-10 h-10 rounded-full object-cover border border-slate-700">
+                    <div class="overflow-hidden flex-1">
+                        <p class="text-sm font-semibold text-white truncate">Shiva Gupta</p>
+                        <p class="text-xs text-slate-400 truncate">Administrator</p>
+                    </div>
+                    <button onclick="showToast('Logged out successfully', 'info')" class="text-slate-400 hover:text-red-400 transition-colors" title="Logout">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50">
+            <!-- Top Navbar -->
+            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 z-30 shadow-xs">
+                <div class="flex items-center space-x-4">
+                    <button id="mobileMenuBtn" class="md:hidden text-slate-600 hover:text-slate-900 focus:outline-none">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                    <div>
+                        <h2 id="pageTitle" class="text-xl font-bold text-slate-800 tracking-tight">Dashboard Overview</h2>
+                        <p id="pageSubtitle" class="text-xs text-slate-500 hidden sm:block">Welcome back, here is what's happening today in your school.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Quick Search bar -->
+                    <div class="relative hidden sm:block w-64">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i data-lucide="search" class="w-4 h-4"></i>
+                        </span>
+                        <input type="text" placeholder="Search anything..." class="w-full pl-9 pr-4 py-2 bg-slate-100 border border-transparent rounded-xl text-sm focus:outline-none focus:bg-white focus:border-indigo-500 transition-all">
+                    </div>
+
+                    <!-- Notification Bell -->
+                    <button onclick="switchTab('notices')" class="relative p-2 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-600 rounded-full ring-2 ring-white"></span>
+                    </button>
+
+                    <!-- Academic Year Selector -->
+                    <div class="hidden md:flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600">
+                        <i data-lucide="calendar" class="w-4 h-4 text-indigo-600"></i>
+                        <span>AY 2025-2026</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Scrollable Dynamic Content Container -->
+            <div class="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar relative" id="mainContainer">
+                
+                <!-- TAB 1: DASHBOARD -->
+                <section id="tab-dashboard" class="space-y-6 animate-fade-in">
+                    <!-- Stat Cards Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Total Students -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Students</p>
+                                <h3 id="statTotalStudents" class="text-2xl font-bold text-slate-800 mt-1">1,248</h3>
+                                <div class="flex items-center mt-2 text-xs text-emerald-600 font-medium">
+                                    <i data-lucide="trending-up" class="w-3.5 h-3.5 mr-1"></i>
+                                    <span>+12% from last term</span>
+                                </div>
+                            </div>
+                            <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-inner">
+                                <i data-lucide="users" class="w-7 h-7"></i>
+                            </div>
+                        </div>
+
+                        <!-- Total Teachers -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Teachers</p>
+                                <h3 id="statTotalTeachers" class="text-2xl font-bold text-slate-800 mt-1">84</h3>
+                                <div class="flex items-center mt-2 text-xs text-emerald-600 font-medium">
+                                    <i data-lucide="trending-up" class="w-3.5 h-3.5 mr-1"></i>
+                                    <span>+4 new hires</span>
+                                </div>
+                            </div>
+                            <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner">
+                                <i data-lucide="user-check" class="w-7 h-7"></i>
+                            </div>
+                        </div>
+
+                        <!-- Attendance Rate -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Attendance Rate</p>
+                                <h3 id="statAttendanceRate" class="text-2xl font-bold text-slate-800 mt-1">94.8%</h3>
+                                <div class="flex items-center mt-2 text-xs text-emerald-600 font-medium">
+                                    <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 mr-1"></i>
+                                    <span>+1.2% this week</span>
+                                </div>
+                            </div>
+                            <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-inner">
+                                <i data-lucide="calendar-check" class="w-7 h-7"></i>
+                            </div>
+                        </div>
+
+                        <!-- Revenue / Fees Collected -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Fees Collected</p>
+                                <h3 id="statRevenue" class="text-2xl font-bold text-slate-800 mt-1">$482,500</h3>
+                                <div class="flex items-center mt-2 text-xs text-amber-600 font-medium">
+                                    <i data-lucide="clock" class="w-3.5 h-3.5 mr-1"></i>
+                                    <span>89% collection rate</span>
+                                </div>
+                            </div>
+                            <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shadow-inner">
+                                <i data-lucide="credit-card" class="w-7 h-7"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts & Recent Activity section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Quick Actions & Overview Banner -->
+                        <div class="lg:col-span-2 bg-gradient-to-r from-indigo-600 to-indigo-800 rounded-3xl p-8 text-white flex flex-col justify-between shadow-lg relative overflow-hidden">
+                            <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+                            <div class="relative z-10">
+                                <span class="bg-indigo-500/50 text-indigo-100 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">New Term Ready</span>
+                                <h2 class="text-2xl sm:text-3xl font-bold mt-3">Welcome to School Management Portal</h2>
+                                <p class="text-indigo-100 text-sm mt-2 max-w-xl">Manage student admissions, track daily attendance, record staff directories, and process tuition fees all in one centralized platform.</p>
+                            </div>
+                            <div class="mt-8 flex flex-wrap gap-3 relative z-10">
+                                <button onclick="openModal('studentModal')" class="bg-white text-indigo-600 px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-indigo-50 transition-colors shadow-md flex items-center space-x-2">
+                                    <i data-lucide="user-plus" class="w-4 h-4"></i>
+                                    <span>Add New Student</span>
+                                </button>
+                                <button onclick="switchTab('attendance')" class="bg-indigo-700/80 text-white border border-indigo-500 px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-colors flex items-center space-x-2">
+                                    <i data-lucide="calendar-check" class="w-4 h-4"></i>
+                                    <span>Mark Attendance</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Recent Notices Widget -->
+                        <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex flex-col">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-slate-800 text-lg">Notice Board</h3>
+                                <button onclick="switchTab('notices')" class="text-indigo-600 hover:text-indigo-700 text-xs font-semibold">View All</button>
+                            </div>
+                            <div id="dashboardNoticesList" class="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-1">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Students Table Preview -->
+                    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-lg">Recently Enrolled Students</h3>
+                                <p class="text-xs text-slate-500">Latest student registrations for the current academic session.</p>
+                            </div>
+                            <button onclick="switchTab('students')" class="text-indigo-600 hover:text-indigo-700 text-sm font-semibold flex items-center space-x-1">
+                                <span>View Directory</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-100 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                                        <th class="py-3 px-4">Student</th>
+                                        <th class="py-3 px-4">Class</th>
+                                        <th class="py-3 px-4">Parent / Guardian</th>
+                                        <th class="py-3 px-4">Status</th>
+                                        <th class="py-3 px-4 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboardStudentsTable" class="divide-y divide-slate-100 text-sm">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 2: STUDENTS MANAGEMENT -->
+                <section id="tab-students" class="space-y-6 hidden animate-fade-in">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800">Students Directory</h3>
+                            <p class="text-xs text-slate-500">Manage student profiles, enrollment status, and class assignments.</p>
+                        </div>
+                        <div class="flex items-center space-x-3 w-full sm:w-auto">
+                            <button onclick="openModal('studentModal')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-semibold text-sm transition-colors shadow-md shadow-indigo-600/20 flex items-center space-x-2 w-full sm:w-auto justify-center">
+                                <i data-lucide="user-plus" class="w-4 h-4"></i>
+                                <span>Add Student</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search and Filter Bar -->
+                    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
+                        <div class="relative w-full md:w-80">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                <i data-lucide="search" class="w-4 h-4"></i>
+                            </span>
+                            <input type="text" id="studentSearchInput" oninput="filterStudents()" placeholder="Search by name or email..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:bg-white focus:border-indigo-500 transition-all">
+                        </div>
+                        <div class="flex items-center space-x-3 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                            <select id="studentClassFilter" onchange="filterStudents()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500">
+                                <option value="">All Classes</option>
+                                <option value="Grade 9">Grade 9</option>
+                                <option value="Grade 10">Grade 10</option>
+                                <option value="Grade 11">Grade 11</option>
+                                <option value="Grade 12">Grade 12</option>
+                            </select>
+                            <select id="studentStatusFilter" onchange="filterStudents()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500">
+                                <option value="">All Status</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Students Table -->
+                    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50/70 border-b border-slate-100 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                                        <th class="py-3.5 px-6">Student Name</th>
+                                        <th class="py-3.5 px-6">Class</th>
+                                        <th class="py-3.5 px-6">Email Address</th>
+                                        <th class="py-3.5 px-6">Parent Contact</th>
+                                        <th class="py-3.5 px-6">Status</th>
+                                        <th class="py-3.5 px-6 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="studentsTableBody" class="divide-y divide-slate-100 text-sm">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 3: TEACHERS MANAGEMENT -->
+                <section id="tab-teachers" class="space-y-6 hidden animate-fade-in">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800">Teachers Directory</h3>
+                            <p class="text-xs text-slate-500">Faculty members, assigned subjects, and contact information.</p>
+                        </div>
+                        <button onclick="openModal('teacherModal')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-semibold text-sm transition-colors shadow-md shadow-indigo-600/20 flex items-center space-x-2">
+                            <i data-lucide="user-plus" class="w-4 h-4"></i>
+                            <span>Add Teacher</span>
+                        </button>
+                    </div>
+
+                    <!-- Teachers Grid -->
+                    <div id="teachersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Populated dynamically -->
+                    </div>
+                </section>
+
+                <!-- TAB 4: ATTENDANCE TRACKER -->
+                <section id="tab-attendance" class="space-y-6 hidden animate-fade-in">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800">Daily Attendance Tracker</h3>
+                            <p class="text-xs text-slate-500">Mark student presence, absence, or tardiness for today's classes.</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <input type="date" id="attendanceDate" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500">
+                            <select id="attendanceClassSelect" onchange="renderAttendanceList()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500">
+                                <option value="Grade 10">Grade 10</option>
+                                <option value="Grade 9">Grade 9</option>
+                                <option value="Grade 11">Grade 11</option>
+                                <option value="Grade 12">Grade 12</option>
+                            </select>
+                            <button onclick="saveAttendance()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-semibold text-sm transition-colors shadow-md flex items-center space-x-1.5">
+                                <i data-lucide="check" class="w-4 h-4"></i>
+                                <span>Save</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Attendance Summary Bar -->
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-400 font-semibold uppercase">Present Today</p>
+                                <h4 id="countPresent" class="text-xl font-bold text-emerald-600 mt-1">0</h4>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                <i data-lucide="user-check" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-400 font-semibold uppercase">Absent Today</p>
+                                <h4 id="countAbsent" class="text-xl font-bold text-red-600 mt-1">0</h4>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
+                                <i data-lucide="user-x" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-400 font-semibold uppercase">Late Today</p>
+                                <h4 id="countLate" class="text-xl font-bold text-amber-600 mt-1">0</h4>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                                <i data-lucide="clock" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attendance List Table -->
+                    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50/70 border-b border-slate-100 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                                        <th class="py-3.5 px-6">Roll / Student</th>
+                                        <th class="py-3.5 px-6">Class</th>
+                                        <th class="py-3.5 px-6 text-center">Attendance Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendanceTableBody" class="divide-y divide-slate-100 text-sm">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 5: FEES & PAYMENTS -->
+                <section id="tab-fees" class="space-y-6 hidden animate-fade-in">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800">Fees & Invoices</h3>
+                            <p class="text-xs text-slate-500">Track student tuition fee status, issue receipts, and record payments.</p>
+                        </div>
+                        <button onclick="openModal('invoiceModal')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-semibold text-sm transition-colors shadow-md shadow-indigo-600/20 flex items-center space-x-2">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                            <span>Create Invoice</span>
+                        </button>
+                    </div>
+
+                    <!-- Fees Table -->
+                    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50/70 border-b border-slate-100 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                                        <th class="py-3.5 px-6">Invoice ID</th>
+                                        <th class="py-3.5 px-6">Student Name</th>
+                                        <th class="py-3.5 px-6">Amount</th>
+                                        <th class="py-3.5 px-6">Due Date</th>
+                                        <th class="py-3.5 px-6">Status</th>
+                                        <th class="py-3.5 px-6 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="feesTableBody" class="divide-y divide-slate-100 text-sm">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 6: NOTICES / ANNOUNCEMENTS -->
+                <section id="tab-notices" class="space-y-6 hidden animate-fade-in">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800">School Notice Board</h3>
+                            <p class="text-xs text-slate-500">Broadcast announcements to students, teachers, and parents.</p>
+                        </div>
+                        <button onclick="openModal('noticeModal')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-semibold text-sm transition-colors shadow-md shadow-indigo-600/20 flex items-center space-x-2">
+                            <i data-lucide="megaphone" class="w-4 h-4"></i>
+                            <span>Post Notice</span>
+                        </button>
+                    </div>
+
+                    <!-- Notices Grid -->
+                    <div id="noticesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Populated dynamically -->
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div id="studentModal" class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center hidden backdrop-blur-xs p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-slate-800">Add New Student</h3>
+                <button onclick="closeModal('studentModal')" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form id="studentForm" onsubmit="handleStudentSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Full Name</label>
+                    <input type="text" id="addStudentName" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500" placeholder="e.g. Alex Turner">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Class</label>
+                        <select id="addStudentClass" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500">
+                            <option value="Grade 9">Grade 9</option>
+                            <option value="Grade 10">Grade 10</option>
+                            <option value="Grade 11">Grade 11</option>
+                            <option value="Grade 12">Grade 12</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Status</label>
+                        <select id="addStudentStatus" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Email Address</label>
+                    <input type="email" id="addStudentEmail" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500" placeholder="alex.turner@eduflow.edu">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Parent / Guardian Name & Phone</label>
+                    <input type="text" id="addStudentParent" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500" placeholder="Robert Turner (+1 555-0192)">
+                </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeModal('studentModal')" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 shadow-md shadow-indigo-600/20">Save Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Teacher Modal -->
+    <div id="teacherModal" class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center hidden backdrop-blur-xs p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-slate-800">Add New Teacher</h3>
+                <button onclick="closeModal('teacherModal')" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form id="teacherForm" onsubmit="handleTeacherSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Full Name</label>
+                    <input type="text" id="addTeacherName" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500" placeholder="e.g. Dr. Richard Parker">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Subject / Department</label>
+                        <input type="text" id="addTeacherSubject" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500" placeholder="Physics">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Phone Number</label>
+                        <input type="text" id="addTeacherPhone" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500" placeholder="+1 555-0142">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Email Address</label>
+                    <input type="email" id="addTeacherEmail" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500" placeholder="richard.parker@eduflow.edu">
+                </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeModal('teacherModal')" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 shadow-md shadow-indigo-600/20">Save Teacher</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Invoice Modal -->
+    <div id="invoiceModal" class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center hidden backdrop-blur-xs p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-slate-800">Create Tuition Invoice</h3>
+                <button onclick="closeModal('invoiceModal')" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form id="invoiceForm" onsubmit="handleInvoiceSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Student Name</label>
+                    <input type="text" id="addInvoiceStudent" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500" placeholder="e.g. Jessica Taylor">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Amount ($)</label>
+                        <input type="number" id="addInvoiceAmount" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500" placeholder="1250">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Due Date</label>
+                        <input type="date" id="addInvoiceDate" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Payment Status</label>
+                    <select id="addInvoiceStatus" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500">
+                        <option value="Paid">Paid</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Overdue">Overdue</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeModal('invoiceModal')" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 shadow-md shadow-indigo-600/20">Generate Invoice</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Post Notice Modal -->
+    <div id="noticeModal" class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center hidden backdrop-blur-xs p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-slate-800">Post School Notice</h3>
+                <button onclick="closeModal('noticeModal')" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form id="noticeForm" onsubmit="handleNoticeSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Notice Title</label>
+                    <input type="text" id="addNoticeTitle" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500" placeholder="e.g. Annual Sports Day & Meet">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Category / Tag</label>
+                    <select id="addNoticeCategory" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500">
+                        <option value="General">General</option>
+                        <option value="Academic">Academic</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Events">Events</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Notice Content</label>
+                    <textarea id="addNoticeContent" rows="4" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500" placeholder="Provide details about the notice..."></textarea>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeModal('noticeModal')" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 shadow-md shadow-indigo-600/20">Post Notice</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Invoice View Modal -->
+    <div id="invoiceViewModal" class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center hidden backdrop-blur-xs p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl animate-fade-in relative">
+            <button onclick="closeModal('invoiceViewModal')" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div id="invoiceReceiptContent">
+                <!-- Populated dynamically -->
+            </div>
+            <div class="mt-6 flex space-x-3">
+                <button onclick="showToast('Invoice printed successfully!', 'success')" class="flex-1 bg-indigo-600 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-colors shadow-md">Print Receipt</button>
+                <button onclick="closeModal('invoiceViewModal')" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+    <script>
+        // Mock State Data
+        let studentsData = [
+            { id: 1, name: 'Emily Watson', class: 'Grade 10', email: 'emily.w@eduflow.edu', parent: 'David Watson (+1 555-0112)', status: 'Active', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80' },
+            { id: 2, name: 'Marcus Chen', class: 'Grade 10', email: 'marcus.c@eduflow.edu', parent: 'Linda Chen (+1 555-0143)', status: 'Active', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' },
+            { id: 3, name: 'Sophia Martinez', class: 'Grade 11', email: 'sophia.m@eduflow.edu', parent: 'Carlos Martinez (+1 555-0189)', status: 'Active', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80' },
+            { id: 4, name: 'Liam Johnson', class: 'Grade 9', email: 'liam.j@eduflow.edu', parent: 'Sarah Johnson (+1 555-0176)', status: 'Inactive', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80' },
+            { id: 5, name: 'Olivia Taylor', class: 'Grade 12', email: 'olivia.t@eduflow.edu', parent: 'James Taylor (+1 555-0199)', status: 'Active', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&auto=format&fit=crop&q=80' }
+        ];
+
+        let teachersData = [
+            { id: 1, name: 'Dr. Robert Langdon', subject: 'Mathematics & Calculus', email: 'robert.l@eduflow.edu', phone: '+1 555-0121', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&auto=format&fit=crop&q=80' },
+            { id: 2, name: 'Prof. Eleanor Vance', subject: 'English Literature', email: 'eleanor.v@eduflow.edu', phone: '+1 555-0182', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80' },
+            { id: 3, name: 'Mr. Arthur Pendelton', subject: 'Physics & Chemistry', email: 'arthur.p@eduflow.edu', phone: '+1 555-0193', avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&auto=format&fit=crop&q=80' }
+        ];
+
+        let attendanceData = {
+            'Grade 10': { 'Emily Watson': 'Present', 'Marcus Chen': 'Present' },
+            'Grade 9': { 'Liam Johnson': 'Absent' },
+            'Grade 11': { 'Sophia Martinez': 'Late' },
+            'Grade 12': { 'Olivia Taylor': 'Present' }
+        };
+
+        let feesData = [
+            { id: 'INV-2026-001', student: 'Emily Watson', amount: 1250, dueDate: '2026-03-30', status: 'Paid' },
+            { id: 'INV-2026-002', student: 'Marcus Chen', amount: 1250, dueDate: '2026-04-05', status: 'Pending' },
+            { id: 'INV-2026-003', student: 'Sophia Martinez', amount: 1400, dueDate: '2026-03-15', status: 'Overdue' },
+            { id: 'INV-2026-004', student: 'Olivia Taylor', amount: 1350, dueDate: '2026-04-10', status: 'Paid' }
+        ];
+
+        let noticesData = [
+            { id: 1, title: 'Mid-Term Examinations Schedule', category: 'Academic', date: 'Oct 10, 2026', content: 'Mid-term exams will begin next Monday. Please review the syllabus posted on your student portal dashboards.' },
+            { id: 2, title: 'Annual Inter-School Sports Meet', category: 'Sports', date: 'Oct 15, 2026', content: 'Registration for track and field events is now live. Contact sports department for enrollment.' },
+            { id: 3, title: 'Parent-Teacher Conference', category: 'General', date: 'Oct 20, 2026', content: 'Join us in the grand auditorium from 4 PM to 7 PM for academic progress reviews.' }
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Set today's date in attendance picker
+            const todayStr = new Date().toISOString().split('T')[0];
+            const attDateEl = document.getElementById('attendanceDate');
+            if(attDateEl) attDateEl.value = todayStr;
+
+            renderAll();
+            setupMobileSidebar();
+        });
+
+        function renderAll() {
+            renderDashboard();
+            renderStudentsTable(studentsData);
+            renderTeachersGrid();
+            renderAttendanceList();
+            renderFeesTable();
+            renderNoticesGrid();
+            lucide.createIcons();
+        }
+
+        // Tab Navigation Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('section[id^="tab-"]').forEach(sec => sec.classList.add('hidden'));
+            const targetSec = document.getElementById(`tab-${tabId}`);
+            if(targetSec) targetSec.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-600/20');
+                link.classList.add('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
+                if(link.getAttribute('data-target') === tabId) {
+                    link.classList.remove('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
+                    link.classList.add('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-600/20');
+                }
+            });
+
+            // Update Header Titles
+            const titles = {
+                dashboard: { title: 'Dashboard Overview', subtitle: "Welcome back, here is what's happening today in your school." },
+                students: { title: 'Students Management', subtitle: 'View and manage enrolled students, filter by grade and status.' },
+                teachers: { title: 'Teachers Directory', subtitle: 'Explore faculty departments, contact info, and assigned subjects.' },
+                attendance: { title: 'Daily Attendance Tracker', subtitle: 'Record and track student attendance securely by class.' },
+                fees: { title: 'Fees & Invoices', subtitle: 'Monitor payment statuses and manage tuition invoices.' },
+                notices: { title: 'School Notice Board', subtitle: 'Publish announcements and stay updated with school events.' }
+            };
+
+            if(titles[tabId]) {
+                document.getElementById('pageTitle').textContent = titles[tabId].title;
+                document.getElementById('pageSubtitle').textContent = titles[tabId].subtitle;
+            }
+
+            // Close mobile menu if open
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.add('hidden');
+            lucide.createIcons();
+        }
+
+        // Mobile Sidebar Controls
+        function setupMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const btn = document.getElementById('mobileMenuBtn');
+            const closeBtn = document.getElementById('closeSidebar');
+
+            btn.addEventListener('click', () => {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            });
+            closeBtn.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            });
+            overlay.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            });
+        }
+
+        // Render Dashboard Metrics & Widgets
+        function renderDashboard() {
+            document.getElementById('statTotalStudents').textContent = studentsData.length + 1243;
+            document.getElementById('statTotalTeachers').textContent = teachersData.length + 81;
+
+            // Notices preview
+            const notList = document.getElementById('dashboardNoticesList');
+            notList.innerHTML = noticesData.slice(0, 3).map(n => `
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 hover:border-indigo-100 transition-all">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-600">${n.category}</span>
+                        <span class="text-[10px] text-slate-400">${n.date}</span>
+                    </div>
+                    <h4 class="font-semibold text-slate-800 text-sm">${n.title}</h4>
+                    <p class="text-xs text-slate-500 mt-1 line-clamp-1">${n.content}</p>
+                </div>
+            `).join('');
+
+            // Recent students table preview
+            const stuTable = document.getElementById('dashboardStudentsTable');
+            stuTable.innerHTML = studentsData.slice(0, 4).map(s => `
+                <tr class="hover:bg-slate-50/50 transition-colors">
+                    <td class="py-3.5 px-4 flex items-center space-x-3">
+                        <img src="${s.avatar}" alt="${s.name}" class="w-9 h-9 rounded-full object-cover">
+                        <div>
+                            <p class="font-semibold text-slate-800">${s.name}</p>
+                            <p class="text-xs text-slate-400">${s.email}</p>
+                        </div>
+                    </td>
+                    <td class="py-3.5 px-4 font-medium text-slate-600">${s.class}</td>
+                    <td class="py-3.5 px-4 text-slate-600">${s.parent}</td>
+                    <td class="py-3.5 px-4">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${s.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}">
+                            ${s.status}
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-4 text-right">
+                        <button onclick="switchTab('students')" class="text-indigo-600 hover:text-indigo-800 font-semibold text-xs">View</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderStudentsTable(data) {
+            const tbody = document.getElementById('studentsTableBody');
+            if(data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-slate-400">No students found.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = data.map(s => `
+                <tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="py-4 px-6 flex items-center space-x-3">
+                        <img src="${s.avatar}" alt="${s.name}" class="w-10 h-10 rounded-full object-cover border border-slate-200">
+                        <div>
+                            <p class="font-semibold text-slate-800">${s.name}</p>
+                            <p class="text-xs text-slate-400">ID: #STU-${1000 + s.id}</p>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 font-medium text-slate-700">${s.class}</td>
+                    <td class="py-4 px-6 text-slate-600">${s.email}</td>
+                    <td class="py-4 px-6 text-slate-600">${s.parent}</td>
+                    <td class="py-4 px-6">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold ${s.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}">
+                            ${s.status}
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 text-right space-x-2">
+                        <button onclick="toggleStudentStatus(${s.id})" class="p-1.5 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition-colors" title="Toggle Status">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="deleteStudent(${s.id})" class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-slate-100 transition-colors" title="Delete">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function filterStudents() {
+            const query = document.getElementById('studentSearchInput').value.toLowerCase();
+            const classFilter = document.getElementById('studentClassFilter').value;
+            const statusFilter = document.getElementById('studentStatusFilter').value;
+
+            const filtered = studentsData.filter(s => {
+                const matchQuery = s.name.toLowerCase().includes(query) || s.email.toLowerCase().includes(query);
+                const matchClass = classFilter === '' || s.class === classFilter;
+                const matchStatus = statusFilter === '' || s.status === statusFilter;
+                return matchQuery && matchClass && matchStatus;
+            });
+            renderStudentsTable(filtered);
+        }
+
+        function renderTeachersGrid() {
+            const grid = document.getElementById('teachersGrid');
+            grid.innerHTML = teachersData.map(t => `
+                <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex flex-col justify-between hover:border-indigo-100 transition-all">
+                    <div>
+                        <div class="flex items-center space-x-4 mb-4">
+                            <img src="${t.avatar}" alt="${t.name}" class="w-14 h-14 rounded-2xl object-cover border border-slate-200">
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-base">${t.name}</h4>
+                                <span class="inline-block px-2.5 py-0.5 rounded-md text-xs font-semibold bg-indigo-50 text-indigo-600 mt-1">${t.subject}</span>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm text-slate-600 pt-2 border-t border-slate-100">
+                            <div class="flex items-center space-x-2.5">
+                                <i data-lucide="mail" class="w-4 h-4 text-slate-400"></i>
+                                <span class="truncate">${t.email}</span>
+                            </div>
+                            <div class="flex items-center space-x-2.5">
+                                <i data-lucide="phone" class="w-4 h-4 text-slate-400"></i>
+                                <span>${t.phone}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs text-emerald-600 font-medium flex items-center">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> Active Faculty
+                        </span>
+                        <button onclick="deleteTeacher(${t.id})" class="text-slate-400 hover:text-red-600 p-1 rounded-lg hover:bg-slate-50 transition-colors">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderAttendanceList() {
+            const className = document.getElementById('attendanceClassSelect').value;
+            const tbody = document.getElementById('attendanceTableBody');
+            
+            // Filter students matching the selected class
+            const classStudents = studentsData.filter(s => s.class === className);
+            
+            if(classStudents.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-slate-400">No students enrolled in ${className}.</td></tr>`;
+                updateAttendanceCounters();
+                return;
+            }
+
+            tbody.innerHTML = classStudents.map((s, idx) => {
+                const currentStatus = (attendanceData[className] && attendanceData[className][s.name]) || 'Present';
+                return `
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                        <td class="py-4 px-6 flex items-center space-x-3">
+                            <span class="w-6 text-xs text-slate-400 font-semibold">#${idx+1}</span>
+                            <img src="${s.avatar}" alt="${s.name}" class="w-9 h-9 rounded-full object-cover">
+                            <span class="font-semibold text-slate-800">${s.name}</span>
+                        </td>
+                        <td class="py-4 px-6 text-slate-600">${s.class}</td>
+                        <td class="py-4 px-6">
+                            <div class="flex items-center justify-center space-x-3">
+                                <button onclick="setAttendanceStatus('${className}', '${s.name}', 'Present')" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${currentStatus === 'Present' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">Present</button>
+                                <button onclick="setAttendanceStatus('${className}', '${s.name}', 'Absent')" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${currentStatus === 'Absent' ? 'bg-red-600 text-white shadow-md shadow-red-600/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">Absent</button>
+                                <button onclick="setAttendanceStatus('${className}', '${s.name}', 'Late')" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${currentStatus === 'Late' ? 'bg-amber-600 text-white shadow-md shadow-amber-600/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">Late</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            updateAttendanceCounters();
+        }
+
+        function setAttendanceStatus(className, studentName, status) {
+            if(!attendanceData[className]) attendanceData[className] = {};
+            attendanceData[className][studentName] = status;
+            renderAttendanceList();
+        }
+
+        function updateAttendanceCounters() {
+            const className = document.getElementById('attendanceClassSelect').value;
+            const classStudents = studentsData.filter(s => s.class === className);
+            let pCount = 0, aCount = 0, lCount = 0;
+
+            classStudents.forEach(s => {
+                const status = (attendanceData[className] && attendanceData[className][s.name]) || 'Present';
+                if(status === 'Present') pCount++;
+                else if(status === 'Absent') aCount++;
+                else if(status === 'Late') lCount++;
+            });
+
+            document.getElementById('countPresent').textContent = pCount;
+            document.getElementById('countAbsent').textContent = aCount;
+            document.getElementById('countLate').textContent = lCount;
+        }
+
+        function saveAttendance() {
+            showToast('Attendance successfully recorded!', 'success');
+        }
+
+        function renderFeesTable() {
+            const tbody = document.getElementById('feesTableBody');
+            tbody.innerHTML = feesData.map(f => {
+                let badgeClass = 'bg-emerald-50 text-emerald-600';
+                if(f.status === 'Pending') badgeClass = 'bg-amber-50 text-amber-600';
+                if(f.status === 'Overdue') badgeClass = 'bg-red-50 text-red-600';
+
+                return `
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                        <td class="py-4 px-6 font-semibold text-indigo-600">${f.id}</td>
+                        <td class="py-4 px-6 font-medium text-slate-800">${f.student}</td>
+                        <td class="py-4 px-6 font-bold text-slate-800">$${f.amount.toLocaleString()}</td>
+                        <td class="py-4 px-6 text-slate-500">${f.dueDate}</td>
+                        <td class="py-4 px-6">
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold ${badgeClass}">
+                                ${f.status}
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 text-right space-x-2">
+                            <button onclick="viewInvoice('${f.id}')" class="p-1.5 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition-colors" title="View Invoice">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="deleteInvoice('${f.id}')" class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-slate-100 transition-colors" title="Delete">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function viewInvoice(id) {
+            const inv = feesData.find(f => f.id === id);
+            if(!inv) return;
+            const container = document.getElementById('invoiceReceiptContent');
+            container.innerHTML = `
+                <div class="text-center pb-6 border-b border-slate-100">
+                    <div class="w-12 h-12 bg-indigo-600 text-white rounded-xl mx-auto flex items-center justify-center font-bold mb-2">
+                        <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-lg">EduFlow Academy</h3>
+                    <p class="text-xs text-slate-400">Official Tuition Fee Receipt</p>
+                </div>
+                <div class="py-6 space-y-3 text-sm">
+                    <div class="flex justify-between"><span class="text-slate-400">Invoice ID:</span><span class="font-semibold text-slate-800">${inv.id}</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Student Name:</span><span class="font-semibold text-slate-800">${inv.student}</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Due Date:</span><span class="font-semibold text-slate-800">${inv.dueDate}</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Status:</span><span class="font-semibold text-emerald-600">${inv.status}</span></div>
+                    <div class="flex justify-between pt-4 border-t border-slate-100 text-base"><span class="font-bold text-slate-800">Total Amount:</span><span class="font-bold text-indigo-600">$${inv.amount.toLocaleString()}</span></div>
+                </div>
+            `;
+            openModal('invoiceViewModal');
+            lucide.createIcons();
+        }
+
+        function renderNoticesGrid() {
+            const grid = document.getElementById('noticesGrid');
+            grid.innerHTML = noticesData.map(n => `
+                <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex flex-col justify-between hover:border-indigo-100 transition-all">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600">${n.category}</span>
+                            <span class="text-xs text-slate-400">${n.date}</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-lg mb-2">${n.title}</h4>
+                        <p class="text-slate-600 text-sm leading-relaxed">${n.content}</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs text-slate-400">Broadcasted by Admin</span>
+                        <button onclick="deleteNotice(${n.id})" class="text-slate-400 hover:text-red-600 p-1 rounded-lg hover:bg-slate-50 transition-colors">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function handleStudentSubmit(e) {
+            e.preventDefault();
+            const newStu = {
+                id: studentsData.length + 1,
+                name: document.getElementById('addStudentName').value,
+                class: document.getElementById('addStudentClass').value,
+                email: document.getElementById('addStudentEmail').value,
+                parent: document.getElementById('addStudentParent').value,
+                status: document.getElementById('addStudentStatus').value,
+                avatar: `https://images.unsplash.com/photo-${1500000000000 + Math.floor(Math.random()*100000)}?w=100&auto=format&fit=crop&q=80`
+            };
+            studentsData.unshift(newStu);
+            closeModal('studentModal');
+            document.getElementById('studentForm').reset();
+            renderAll();
+            showToast('Student successfully added!', 'success');
+        }
+
+        function handleTeacherSubmit(e) {
+            e.preventDefault();
+            const newTea = {
+                id: teachersData.length + 1,
+                name: document.getElementById('addTeacherName').value,
+                subject: document.getElementById('addTeacherSubject').value,
+                email: document.getElementById('addTeacherEmail').value,
+                phone: document.getElementById('addTeacherPhone').value,
+                avatar: `https://images.unsplash.com/photo-${1500000000000 + Math.floor(Math.random()*100000)}?w=100&auto=format&fit=crop&q=80`
+            };
+            teachersData.unshift(newTea);
+            closeModal('teacherModal');
+            document.getElementById('teacherForm').reset();
+            renderAll();
+            showToast('Teacher profile successfully created!', 'success');
+        }
+
+        function handleInvoiceSubmit(e) {
+            e.preventDefault();
+            const newInv = {
+                id: `INV-2026-00${feesData.length + 1}`,
+                student: document.getElementById('addInvoiceStudent').value,
+                amount: parseFloat(document.getElementById('addInvoiceAmount').value),
+                dueDate: document.getElementById('addInvoiceDate').value,
+                status: document.getElementById('addInvoiceStatus').value
+            };
+            feesData.unshift(newInv);
+            closeModal('invoiceModal');
+            document.getElementById('invoiceForm').reset();
+            renderAll();
+            showToast('Invoice generated successfully!', 'success');
+        }
+
+        function handleNoticeSubmit(e) {
+            e.preventDefault();
+            const newNotice = {
+                id: noticesData.length + 1,
+                title: document.getElementById('addNoticeTitle').value,
+                category: document.getElementById('addNoticeCategory').value,
+                date: 'Today',
+                content: document.getElementById('addNoticeContent').value
+            };
+            noticesData.unshift(newNotice);
+            closeModal('noticeModal');
+            document.getElementById('noticeForm').reset();
+            renderAll();
+            showToast('Notice posted successfully!', 'success');
+        }
+
+        function toggleStudentStatus(id) {
+            const s = studentsData.find(item => item.id === id);
+            if(s) {
+                s.status = s.status === 'Active' ? 'Inactive' : 'Active';
+                renderAll();
+                showToast(`Student status updated to ${s.status}`, 'info');
+            }
+        }
+
+        function deleteStudent(id) {
+            studentsData = studentsData.filter(s => s.id !== id);
+            renderAll();
+            showToast('Student deleted from directory', 'info');
+        }
+
+        function deleteTeacher(id) {
+            teachersData = teachersData.filter(t => t.id !== id);
+            renderAll();
+            showToast('Teacher removed from faculty', 'info');
+        }
+
+        function deleteInvoice(id) {
+            feesData = feesData.filter(f => f.id !== id);
+            renderAll();
+            showToast('Invoice deleted', 'info');
+        }
+
+        function deleteNotice(id) {
+            noticesData = noticesData.filter(n => n.id !== id);
+            renderAll();
+            showToast('Notice removed', 'info');
+        }
+
+        // Toast Notification System
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let bgClass = 'bg-slate-900 text-white';
+            let iconName = 'check-circle';
+            let iconColor = 'text-emerald-400';
+
+            if(type === 'success') {
+                iconName = 'check-circle';
+                iconColor = 'text-emerald-400';
+            } else if(type === 'info') {
+                iconName = 'info';
+                iconColor = 'text-indigo-400';
+            }
+
+            toast.className = `flex items-center space-x-3 px-4 py-3 rounded-2xl shadow-xl ${bgClass} text-sm font-medium animate-fade-in pointer-events-auto border border-slate-800`;
+            toast.innerHTML = `
+                <i data-lucide="${iconName}" class="w-5 h-5 ${iconColor}"></i>
+                <span>${message}</span>
+            `;
+
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
