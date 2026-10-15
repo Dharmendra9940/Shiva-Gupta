@@ -1,0 +1,2640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ghapla Bank & Finance Management System</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            bank: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              800: '#0c4a6e',
+              900: '#082f49',
+            },
+            emerald: {
+              500: '#10b981',
+              600: '#059669',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    /* Custom scrollbar for tables & cards */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.3);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(100, 116, 139, 0.5);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none max-w-sm w-full"></div>
+
+  <!-- Main Wrapper -->
+  <div class="flex-1 flex flex-col md:flex-row min-h-screen">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-64 bg-slate-900 text-white flex-shrink-0 flex flex-col justify-between border-r border-slate-800">
+      <div>
+        <!-- Brand Header -->
+        <div class="p-5 flex items-center justify-between border-b border-slate-800">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+              </svg>
+            </div>
+            <div>
+              <span class="font-bold text-lg tracking-tight block">Nova Bank</span>
+              <span class="text-xs text-sky-400 font-medium tracking-wider uppercase">FinCore Pro</span>
+            </div>
+          </div>
+          <!-- Dark mode toggle button -->
+          <button id="theme-toggle-btn" class="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition" title="Toggle Dark/Light Mode">
+            <svg id="theme-icon-dark" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+            <svg id="theme-icon-light" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="p-3 space-y-1" id="sidebar-nav">
+          <button data-tab="dashboard" class="nav-item active w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-sky-400 bg-slate-800/80">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+            </svg>
+            <span>Dashboard</span>
+          </button>
+
+          <button data-tab="accounts" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/50">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+            <span>Accounts</span>
+          </button>
+
+          <button data-tab="operations" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/50">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+            </svg>
+            <span>Transact & Transfer</span>
+          </button>
+
+          <button data-tab="history" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/50">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Transaction Ledger</span>
+          </button>
+
+          <button data-tab="finance" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/50">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            <span>Finance & Budgets</span>
+          </button>
+
+          <button data-tab="loans" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/50">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+            </svg>
+            <span>Loans & Investments</span>
+          </button>
+
+          <button data-tab="settings" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800/50">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span>Security & Settings</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Quick User Card -->
+      <div class="p-4 border-t border-slate-800 bg-slate-900/60">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-sky-400">
+           JD
+          </div>
+          <div class="overflow-hidden">
+            <h4 class="text-sm font-semibold text-white truncate" id="user-display-name">John Doe</h4>
+            <p class="text-xs text-slate-400 truncate">Premium Tier Client</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      
+      <!-- Top Action Bar -->
+      <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sticky top-0 z-30 shadow-sm">
+        <div class="flex items-center space-x-4">
+          <div>
+            <h1 class="text-xl font-bold tracking-tight" id="page-title">Financial Dashboard</h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400" id="page-subtitle">Real-time banking metrics & wealth insights</p>
+          </div>
+        </div>
+
+        <!-- Header Controls -->
+        <div class="flex items-center space-x-3">
+          <!-- Active Account Selector -->
+          <div class="flex items-center space-x-2">
+            <span class="text-xs font-medium text-slate-500 dark:text-slate-400 hidden sm:inline">Active:</span>
+            <select id="active-account-select" class="bg-slate-100 dark:bg-slate-700 border-0 rounded-lg px-3 py-2 text-xs font-semibold text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+
+          <!-- Quick Action: Deposit -->
+          <button id="btn-quick-deposit" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 shadow-sm transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            <span>Deposit</span>
+          </button>
+
+          <!-- Quick Action: Transfer -->
+          <button id="btn-quick-transfer" class="px-3 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 shadow-sm transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+            </svg>
+            <span>Transfer</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- View Sections Container -->
+      <div class="p-6 space-y-6 flex-1">
+
+        <!-- ============================================== -->
+        <!-- TAB 1: DASHBOARD -->
+        <!-- ============================================== -->
+        <section id="view-dashboard" class="tab-view space-y-6">
+          
+          <!-- Key Metrics Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- Total Net Balance -->
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm relative overflow-hidden">
+              <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+                <span>Total Net Worth</span>
+                <div class="p-2 rounded-lg bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="text-2xl font-bold tracking-tight" id="dash-total-networth">$0.00</div>
+              <div class="mt-2 text-xs flex items-center text-emerald-600 font-medium space-x-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                </svg>
+                <span>Active portfolio across accounts</span>
+              </div>
+            </div>
+
+            <!-- Active Account Balance -->
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm">
+              <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+                <span id="dash-active-account-label">Active Account</span>
+                <div class="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="text-2xl font-bold tracking-tight text-sky-600 dark:text-sky-400" id="dash-active-balance">$0.00</div>
+              <div class="mt-2 text-xs text-slate-500 dark:text-slate-400" id="dash-active-num">Acc: ****0000</div>
+            </div>
+
+            <!-- Total Monthly Inflow -->
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm">
+              <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+                <span>Total Inflow (Deposits)</span>
+                <div class="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400" id="dash-total-inflow">$0.00</div>
+              <div class="mt-2 text-xs text-slate-500 dark:text-slate-400">Credits & incoming transfers</div>
+            </div>
+
+            <!-- Total Outflow -->
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm">
+              <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+                <span>Total Outflow (Expenses)</span>
+                <div class="p-2 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="text-2xl font-bold tracking-tight text-rose-600 dark:text-rose-400" id="dash-total-outflow">$0.00</div>
+              <div class="mt-2 text-xs text-slate-500 dark:text-slate-400">Debits, transfers & bills</div>
+            </div>
+          </div>
+
+          <!-- Charts & Health Row -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Cash Flow Analysis (2 Cols) -->
+            <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm flex flex-col">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700 gap-2">
+                <div>
+                  <h3 class="font-bold text-base">Cashflow & Transaction Trends</h3>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">Monthly breakdown of inflows vs outflows</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <button id="chart-refresh-btn" class="px-2.5 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 rounded-md transition">Refresh</button>
+                </div>
+              </div>
+              <div class="relative h-72 w-full mt-4">
+                <canvas id="cashflowChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Financial Health Score & Quick Summary (1 Col) -->
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm flex flex-col justify-between space-y-4">
+              <div>
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+                  <h3 class="font-bold text-base">Financial Health</h3>
+                  <span class="text-xs px-2 py-0.5 rounded-full font-semibold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300" id="health-grade-badge">Optimal</span>
+                </div>
+                
+                <!-- Score Gauge -->
+                <div class="py-4 text-center">
+                  <div class="inline-flex items-center justify-center p-4 rounded-full bg-slate-50 dark:bg-slate-700/50 relative">
+                    <div class="text-4xl font-extrabold text-sky-600 dark:text-sky-400" id="health-score-val">88</div>
+                    <span class="text-xs font-bold text-slate-400 ml-1">/100</span>
+                  </div>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 mt-2" id="health-score-feedback">Your savings rate and budget adherence are in excellent standing.</p>
+                </div>
+
+                <!-- Financial Health Checklist -->
+                <div class="space-y-2.5 text-xs">
+                  <div class="flex items-center justify-between">
+                    <span class="text-slate-500 dark:text-slate-400">Savings Rate:</span>
+                    <span class="font-semibold text-emerald-600" id="health-savings-rate">32.4%</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-slate-500 dark:text-slate-400">Budget Adherence:</span>
+                    <span class="font-semibold text-sky-600" id="health-budget-adherence">86%</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-slate-500 dark:text-slate-400">Daily Limit Usage:</span>
+                    <span class="font-semibold text-slate-700 dark:text-slate-200" id="health-limit-usage">14.5%</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-slate-500 dark:text-slate-400">Active Accounts:</span>
+                    <span class="font-semibold text-slate-700 dark:text-slate-200" id="health-active-accounts">3</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick action to budget -->
+              <button id="btn-goto-finance" class="w-full py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 transition">
+                Manage Monthly Budgets &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- Recent Transactions Widget -->
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700">
+              <div>
+                <h3 class="font-bold text-base">Recent Activity</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Latest debits, credits, and fund transfers</p>
+              </div>
+              <button id="btn-view-all-tx" class="text-xs font-semibold text-sky-600 hover:text-sky-700 dark:text-sky-400">View Full Ledger &rarr;</button>
+            </div>
+            
+            <div class="overflow-x-auto mt-4">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700">
+                    <th class="py-2.5 px-3">Date & Time</th>
+                    <th class="py-2.5 px-3">Description</th>
+                    <th class="py-2.5 px-3">Category</th>
+                    <th class="py-2.5 px-3">Type</th>
+                    <th class="py-2.5 px-3">Account</th>
+                    <th class="py-2.5 px-3 text-right">Amount</th>
+                    <th class="py-2.5 px-3 text-center">Receipt</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-recent-tx-tbody" class="divide-y divide-slate-100 dark:divide-slate-700/60">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ============================================== -->
+        <!-- TAB 2: ACCOUNTS MANAGEMENT -->
+        <!-- ============================================== -->
+        <section id="view-accounts" class="tab-view hidden space-y-6">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-bold">Managed Accounts Portfolio</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">View balances, open new specialized accounts, and manage security locks</p>
+            </div>
+            <button id="btn-open-new-account-modal" class="px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center space-x-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+              <span>Open New Account</span>
+            </button>
+          </div>
+
+          <!-- Accounts Cards Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="accounts-cards-grid">
+            <!-- Dynamically populated -->
+          </div>
+
+          <!-- Account Details & Actions Panel -->
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm" id="account-detail-panel">
+            <h3 class="font-bold text-base mb-4 flex items-center space-x-2">
+              <span>Account Specifications & Security</span>
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs" id="account-meta-grid">
+              <!-- Dynamically populated with active account details -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- TAB 3: TRANSACT & TRANSFER -->
+        <!-- ============================================== -->
+        <section id="view-operations" class="tab-view hidden space-y-6">
+          
+          <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm overflow-hidden">
+            <!-- Operations Tab Navigation -->
+            <div class="flex border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-xs font-semibold">
+              <button id="op-tab-deposit-btn" class="op-sub-tab active px-6 py-3.5 border-b-2 border-sky-600 text-sky-600 dark:text-sky-400 bg-white dark:bg-slate-800">
+                Deposit Funds
+              </button>
+              <button id="op-tab-withdraw-btn" class="op-sub-tab px-6 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400">
+                Withdraw Cash
+              </button>
+              <button id="op-tab-transfer-btn" class="op-sub-tab px-6 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400">
+                Fund Transfer
+              </button>
+              <button id="op-tab-bill-btn" class="op-sub-tab px-6 py-3.5 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400">
+                Bill Payment
+              </button>
+            </div>
+
+            <div class="p-6">
+              
+              <!-- 1. Deposit Form -->
+              <form id="form-deposit" class="op-form max-w-xl space-y-4">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Target Account</label>
+                  <select id="deposit-account-select" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                  </select>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Deposit Amount ($)</label>
+                    <input type="number" step="0.01" min="1" max="100000" id="deposit-amount" placeholder="e.g. 500.00" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Payment Method</label>
+                    <select id="deposit-method" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                      <option value="Direct Deposit / Salary">Direct Deposit (Payroll / Salary)</option>
+                      <option value="Wire Transfer">Incoming Wire Transfer</option>
+                      <option value="Check Deposit">Mobile Check Deposit</option>
+                      <option value="Cash Deposit">ATM / Branch Cash Deposit</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Transaction Memo / Description</label>
+                  <input type="text" id="deposit-memo" placeholder="Optional notes (e.g. Monthly salary, consulting payout)" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                </div>
+                <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition">
+                  Confirm & Credit Account
+                </button>
+              </form>
+
+              <!-- 2. Withdraw Form -->
+              <form id="form-withdraw" class="op-form hidden max-w-xl space-y-4">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Source Account</label>
+                  <select id="withdraw-account-select" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                  </select>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Withdrawal Amount ($)</label>
+                    <input type="number" step="0.01" min="1" id="withdraw-amount" placeholder="e.g. 150.00" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Channel</label>
+                    <select id="withdraw-channel" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                      <option value="ATM Cash Withdrawal">ATM Cash Withdrawal</option>
+                      <option value="Branch Teller">Branch Teller Cash Out</option>
+                      <option value="Debit Card Purchase">Debit Card Point-of-Sale</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Security PIN (Demo: Any 4 digits)</label>
+                  <input type="password" maxlength="4" id="withdraw-pin" placeholder="Enter 4-digit PIN" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                </div>
+                <button type="submit" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-sm transition">
+                  Authorize & Withdraw Funds
+                </button>
+              </form>
+
+              <!-- 3. Transfer Form -->
+              <form id="form-transfer" class="op-form hidden max-w-xl space-y-4">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Transfer Mode</label>
+                  <div class="grid grid-cols-2 gap-3 mb-2">
+                    <label class="flex items-center space-x-2 p-2.5 border rounded-xl cursor-pointer text-xs font-medium border-sky-500 bg-sky-50/50 dark:bg-sky-900/20">
+                      <input type="radio" name="transfer-mode" value="internal" checked class="text-sky-600 focus:ring-sky-500">
+                      <span>Between My Accounts</span>
+                    </label>
+                    <label class="flex items-center space-x-2 p-2.5 border rounded-xl cursor-pointer text-xs font-medium border-slate-200 dark:border-slate-700">
+                      <input type="radio" name="transfer-mode" value="external" class="text-sky-600 focus:ring-sky-500">
+                      <span>To External Recipient</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">From Account</label>
+                    <select id="transfer-from-select" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                    </select>
+                  </div>
+
+                  <!-- Internal Destination -->
+                  <div id="transfer-internal-dest-wrap">
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">To Account</label>
+                    <select id="transfer-to-internal-select" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                    </select>
+                  </div>
+
+                  <!-- External Destination Fields -->
+                  <div id="transfer-external-dest-wrap" class="hidden sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Beneficiary Name</label>
+                      <input type="text" id="transfer-ext-name" placeholder="e.g. Alice Smith" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Recipient Account / IBAN</label>
+                      <input type="text" id="transfer-ext-acc" placeholder="e.g. 9876543210" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Transfer Amount ($)</label>
+                    <input type="number" step="0.01" min="1" id="transfer-amount" placeholder="e.g. 250.00" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Category</label>
+                    <select id="transfer-category" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                      <option value="Transfer">Account Transfer</option>
+                      <option value="Bills & Utilities">Bills & Utilities</option>
+                      <option value="Family Support">Family Support</option>
+                      <option value="Investment">Investment</option>
+                      <option value="Rent / Housing">Rent / Housing</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Payment Reference / Note</label>
+                  <input type="text" id="transfer-memo" placeholder="Reference note" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold shadow-sm transition">
+                  Execute Instant Transfer
+                </button>
+              </form>
+
+              <!-- 4. Bill Payment Form -->
+              <form id="form-bill" class="op-form hidden max-w-xl space-y-4">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Biller / Service Provider</label>
+                  <select id="bill-provider-select" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                    <option value="City Power & Light - Electricity">City Power & Light (Electricity)</option>
+                    <option value="Metro Water & Sewage">Metro Water & Sewage</option>
+                    <option value="Fiber Broadband & Internet">Fiber Broadband & Internet</option>
+                    <option value="National Gas Grid">National Gas Grid</option>
+                    <option value="Global Health Insurance">Global Health Insurance</option>
+                    <option value="Mobile Telecomm Services">Mobile Telecomm Services</option>
+                  </select>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Pay From Account</label>
+                    <select id="bill-account-select" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Amount ($)</label>
+                    <input type="number" step="0.01" min="1" id="bill-amount" placeholder="e.g. 85.50" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Consumer / Account ID with Biller</label>
+                  <input type="text" id="bill-account-number" placeholder="e.g. PWR-8849201" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                </div>
+                <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm transition">
+                  Pay Bill & Log Receipt
+                </button>
+              </form>
+
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ============================================== -->
+        <!-- TAB 4: TRANSACTION LEDGER & EXPORT -->
+        <!-- ============================================== -->
+        <section id="view-history" class="tab-view hidden space-y-6">
+          
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-bold">Comprehensive Transaction Ledger</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Search, filter, inspect receipts, and export verified financial statements</p>
+            </div>
+            
+            <!-- Export to CSV button -->
+            <button id="btn-export-csv" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center space-x-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              <span>Export CSV Statement</span>
+            </button>
+          </div>
+
+          <!-- Filters Bar -->
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+            <div>
+              <label class="block font-medium text-slate-500 dark:text-slate-400 mb-1">Search Keywords</label>
+              <input type="text" id="tx-search-input" placeholder="Search memo, ref, type..." class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+            </div>
+            <div>
+              <label class="block font-medium text-slate-500 dark:text-slate-400 mb-1">Filter by Type</label>
+              <select id="tx-filter-type" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                <option value="all">All Types</option>
+                <option value="deposit">Deposits</option>
+                <option value="withdrawal">Withdrawals</option>
+                <option value="transfer">Transfers</option>
+                <option value="bill">Bill Payments</option>
+                <option value="loan">Loans</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-medium text-slate-500 dark:text-slate-400 mb-1">Filter by Account</label>
+              <select id="tx-filter-account" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-sky-500">
+                <option value="all">All Accounts</option>
+              </select>
+            </div>
+            <div class="flex items-end">
+              <button id="btn-reset-filters" class="w-full py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-semibold transition">
+                Reset Filters
+              </button>
+            </div>
+          </div>
+
+          <!-- Main Ledger Table -->
+          <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="bg-slate-50 dark:bg-slate-700/50 text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
+                    <th class="py-3 px-4 font-semibold">Reference ID</th>
+                    <th class="py-3 px-4 font-semibold">Timestamp</th>
+                    <th class="py-3 px-4 font-semibold">Description / Merchant</th>
+                    <th class="py-3 px-4 font-semibold">Category</th>
+                    <th class="py-3 px-4 font-semibold">Account</th>
+                    <th class="py-3 px-4 font-semibold text-right">Amount</th>
+                    <th class="py-3 px-4 font-semibold text-right">Balance After</th>
+                    <th class="py-3 px-4 font-semibold text-center">Status</th>
+                    <th class="py-3 px-4 font-semibold text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="tx-ledger-tbody" class="divide-y divide-slate-100 dark:divide-slate-700/60">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+            <!-- Pagination / Counter summary -->
+            <div class="p-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between text-xs text-slate-500">
+              <span id="tx-count-display">Showing 0 transactions</span>
+              <span class="text-emerald-600 font-medium">&bull; Immutable Ledger Sync</span>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ============================================== -->
+        <!-- TAB 5: FINANCE MANAGEMENT & BUDGETING -->
+        <!-- ============================================== -->
+        <section id="view-finance" class="tab-view hidden space-y-6">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-bold">Personal & Business Finance Management</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Budget envelope tracking, spending caps, and savings goals progression</p>
+            </div>
+            <button id="btn-add-goal-modal" class="px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center space-x-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+              <span>Create Savings Goal</span>
+            </button>
+          </div>
+
+          <!-- Visual Breakdown Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Expense Category Doughnut Chart -->
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm flex flex-col">
+              <h3 class="font-bold text-base mb-1">Expense Breakdown</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Distribution by spending category</p>
+              <div class="relative h-64 w-full">
+                <canvas id="expenseDoughnutChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Category Budget Caps (2 Cols) -->
+            <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <h3 class="font-bold text-base">Monthly Category Budget Envelopes</h3>
+                  <span class="text-xs text-slate-500 dark:text-slate-400">Real-time consumption</span>
+                </div>
+                <div class="space-y-4 mt-4" id="budget-categories-list">
+                  <!-- Dynamically populated budget progress bars -->
+                </div>
+              </div>
+              <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 flex flex-wrap items-center justify-between text-xs text-slate-500">
+                <span>Green: &lt; 75% | Amber: 75-90% | Red: Exceeded Cap</span>
+                <button id="btn-adjust-budgets-modal" class="text-sky-600 hover:text-sky-700 font-bold">Adjust Budget Limits &rarr;</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Savings Goals Section -->
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm">
+            <h3 class="font-bold text-base mb-1">Active Savings Goals & Targets</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-5">Automate or allocate funds directly towards your milestones</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="goals-cards-grid">
+              <!-- Dynamically populated goals -->
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ============================================== -->
+        <!-- TAB 6: LOANS & INVESTMENT CALCULATORS -->
+        <!-- ============================================== -->
+        <section id="view-loans" class="tab-view hidden space-y-6">
+          
+          <div>
+            <h2 class="text-lg font-bold">Credit Facilities, Loans & Term Investments</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Interactive loan EMI calculator with instant disbursement simulation & Fixed Deposit yield modeler</p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Loan EMI Calculator & Simulator -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+                  <h3 class="font-bold text-base">Loan & EMI Calculator</h3>
+                  <span class="text-xs px-2 py-0.5 rounded-full font-semibold bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300">Instant Approval</span>
+                </div>
+
+                <div class="mt-4 space-y-4 text-xs">
+                  <div>
+                    <div class="flex justify-between font-semibold mb-1">
+                      <span>Loan Amount ($)</span>
+                      <span id="loan-amount-val" class="text-sky-600 font-bold">$10,000</span>
+                    </div>
+                    <input type="range" id="loan-amount-slider" min="1000" max="100000" step="500" value="10000" class="w-full accent-sky-600 cursor-pointer">
+                  </div>
+
+                  <div>
+                    <div class="flex justify-between font-semibold mb-1">
+                      <span>Interest Rate (% per annum)</span>
+                      <span id="loan-rate-val" class="text-sky-600 font-bold">8.5%</span>
+                    </div>
+                    <input type="range" id="loan-rate-slider" min="3" max="24" step="0.25" value="8.5" class="w-full accent-sky-600 cursor-pointer">
+                  </div>
+
+                  <div>
+                    <div class="flex justify-between font-semibold mb-1">
+                      <span>Tenure (Months)</span>
+                      <span id="loan-tenure-val" class="text-sky-600 font-bold">24 Months (2 Yrs)</span>
+                    </div>
+                    <input type="range" id="loan-tenure-slider" min="6" max="60" step="6" value="24" class="w-full accent-sky-600 cursor-pointer">
+                  </div>
+
+                  <!-- Loan Calculation Result Box -->
+                  <div class="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl space-y-2 mt-4">
+                    <div class="flex justify-between items-center">
+                      <span class="text-slate-500 dark:text-slate-400 font-medium">Monthly Repayment (EMI):</span>
+                      <span class="text-base font-bold text-sky-600 dark:text-sky-400" id="calc-emi-result">$454.56</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-slate-500 dark:text-slate-400 font-medium">Total Interest Payable:</span>
+                      <span class="font-bold text-rose-600" id="calc-total-interest">$909.44</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-slate-500 dark:text-slate-400 font-medium">Total Loan Repayment:</span>
+                      <span class="font-bold text-slate-800 dark:text-slate-100" id="calc-total-repayment">$10,909.44</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action: Disburse Loan Simulation -->
+              <div class="mt-6">
+                <button id="btn-apply-loan-disburse" class="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold shadow-sm transition">
+                  Simulate Loan Approval & Credit to Account
+                </button>
+              </div>
+            </div>
+
+            <!-- Fixed Deposit / Term Investment Calculator -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+                  <h3 class="font-bold text-base">Fixed Deposit (FD) Yield Modeler</h3>
+                  <span class="text-xs px-2 py-0.5 rounded-full font-semibold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">Guaranteed Return</span>
+                </div>
+
+                <div class="mt-4 space-y-4 text-xs">
+                  <div>
+                    <label class="block font-semibold mb-1">Principal Deposit ($)</label>
+                    <input type="number" id="fd-principal-input" value="5000" min="500" step="100" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="block font-semibold mb-1">Annual Interest Rate (%)</label>
+                      <input type="number" id="fd-rate-input" value="6.75" min="1" max="15" step="0.25" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div>
+                      <label class="block font-semibold mb-1">Lock-in Period (Years)</label>
+                      <select id="fd-period-select" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                        <option value="1">1 Year</option>
+                        <option value="2">2 Years</option>
+                        <option value="3" selected>3 Years</option>
+                        <option value="5">5 Years</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- FD Calculation Result Box -->
+                  <div class="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl space-y-2 mt-4">
+                    <div class="flex justify-between items-center">
+                      <span class="text-slate-500 dark:text-slate-400 font-medium">Estimated Maturity Payout:</span>
+                      <span class="text-base font-bold text-emerald-600 dark:text-emerald-400" id="fd-maturity-result">$6,082.35</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-slate-500 dark:text-slate-400 font-medium">Net Interest Earned:</span>
+                      <span class="font-bold text-sky-600" id="fd-interest-result">+$1,082.35</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-slate-500 dark:text-slate-400 font-medium">Compounding Frequency:</span>
+                      <span class="font-semibold text-slate-700 dark:text-slate-300">Quarterly (Standard Bank Rate)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action: Lock in Term Deposit -->
+              <div class="mt-6">
+                <button id="btn-create-fd-term" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition">
+                  Create Fixed Deposit Certificate
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- ============================================== -->
+        <!-- TAB 7: SECURITY & SETTINGS -->
+        <!-- ============================================== -->
+        <section id="view-settings" class="tab-view hidden space-y-6">
+          
+          <div>
+            <h2 class="text-lg font-bold">Banking Preferences & Security Governance</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Configure transaction thresholds, manage user profiles, and control application state</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Security Thresholds -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-4">
+              <h3 class="font-bold text-base pb-2 border-b border-slate-100 dark:border-slate-700">Limits & Safeguards</h3>
+              
+              <div class="space-y-3 text-xs">
+                <div>
+                  <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">Daily Withdrawal Cap ($)</label>
+                  <input type="number" id="setting-daily-limit" value="2500" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-white">
+                </div>
+                <div>
+                  <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">Single Transaction Transfer Cap ($)</label>
+                  <input type="number" id="setting-single-tx-limit" value="10000" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-white">
+                </div>
+                <div>
+                  <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">Preferred Display Currency</label>
+                  <select id="setting-currency" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-white">
+                    <option value="USD">USD ($ - US Dollar)</option>
+                    <option value="EUR">EUR (€ - Euro)</option>
+                    <option value="GBP">GBP (£ - British Pound)</option>
+                    <option value="INR">INR (₹ - Indian Rupee)</option>
+                  </select>
+                </div>
+                <button id="btn-save-security-settings" class="w-full py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold transition">
+                  Save Security Thresholds
+                </button>
+              </div>
+            </div>
+
+            <!-- Data & Profile Management -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-4 flex flex-col justify-between">
+              <div>
+                <h3 class="font-bold text-base pb-2 border-b border-slate-100 dark:border-slate-700">Account Holder Profile</h3>
+                <div class="space-y-3 text-xs mt-3">
+                  <div>
+                    <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">Client Legal Name</label>
+                    <input type="text" id="setting-client-name" value="John Doe" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-white">
+                  </div>
+                  <div>
+                    <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">Registered Email Address</label>
+                    <input type="email" id="setting-client-email" value="john.doe@fintechcorp.io" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-white">
+                  </div>
+                  <button id="btn-save-profile" class="w-full py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-800 dark:text-white rounded-xl text-xs font-bold transition">
+                    Update Profile Details
+                  </button>
+                </div>
+              </div>
+
+              <!-- Reset Data / Restore Defaults -->
+              <div class="pt-4 border-t border-slate-100 dark:border-slate-700">
+                <h4 class="text-xs font-bold text-rose-600 mb-1">State Reset & Factory Seed</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Reinitialize the database with authentic banking & finance mock seed records.</p>
+                <button id="btn-reset-demo-data" class="w-full py-2.5 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-xl text-xs font-bold transition">
+                  Reset Demo Financial Data
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODALS -->
+  <!-- ============================================== -->
+
+  <!-- 1. Open New Account Modal -->
+  <div id="modal-new-account" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+        <h3 class="font-bold text-base">Open New Banking Account</h3>
+        <button id="modal-new-account-close" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+      <form id="form-create-account" class="space-y-4 mt-4 text-xs">
+        <div>
+          <label class="block font-semibold mb-1">Account Nickname</label>
+          <input type="text" id="new-acc-name" placeholder="e.g. Vacation Vault, Tech Ventures" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Account Category / Type</label>
+          <select id="new-acc-type" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white">
+            <option value="Checking">Everyday Checking Account (0.1% APY)</option>
+            <option value="High-Yield Savings">High-Yield Savings Account (4.5% APY)</option>
+            <option value="Business Operations">Business Operations Account (Zero fee)</option>
+            <option value="Investment">Investment & Stocks Portfolio (Growth)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Initial Opening Deposit ($)</label>
+          <input type="number" step="0.01" min="25" id="new-acc-deposit" placeholder="Min. $25.00" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white">
+        </div>
+        <button type="submit" class="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold transition">
+          Issue New Account
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Transaction Receipt Detail Modal -->
+  <div id="modal-receipt" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+        <h3 class="font-bold text-base">Verified Transaction Receipt</h3>
+        <button id="modal-receipt-close" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+      <div class="py-4 space-y-3 text-xs" id="receipt-details-content">
+        <!-- Dynamically injected -->
+      </div>
+      <div class="pt-3 border-t border-slate-100 dark:border-slate-700 flex space-x-2">
+        <button id="modal-receipt-print-btn" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-800 dark:text-white rounded-xl font-bold transition">
+          Copy Reference ID
+        </button>
+        <button id="modal-receipt-done-btn" class="flex-1 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-bold transition">
+          Close Receipt
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Contribute to Savings Goal Modal -->
+  <div id="modal-goal-contribute" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+        <h3 class="font-bold text-base" id="goal-modal-title">Contribute to Goal</h3>
+        <button id="modal-goal-close" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+      <form id="form-contribute-goal" class="space-y-4 mt-4 text-xs">
+        <input type="hidden" id="goal-target-id">
+        <div>
+          <label class="block font-semibold mb-1">Fund From Account</label>
+          <select id="goal-source-acc" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white">
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Contribution Amount ($)</label>
+          <input type="number" step="0.01" min="1" id="goal-contribute-amount" placeholder="e.g. 100.00" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white">
+        </div>
+        <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition">
+          Confirm Contribution
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Create New Savings Goal Modal -->
+  <div id="modal-new-goal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+        <h3 class="font-bold text-base">Create New Savings Target</h3>
+        <button id="modal-new-goal-close" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+      <form id="form-create-goal" class="space-y-4 mt-4 text-xs">
+        <div>
+          <label class="block font-semibold mb-1">Goal Name</label>
+          <input type="text" id="new-goal-name" placeholder="e.g. Emergency Reserve, Tokyo Trip" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Target Amount ($)</label>
+          <input type="number" step="10" min="50" id="new-goal-target" placeholder="e.g. 5000" required class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Initial Saved Amount ($)</label>
+          <input type="number" step="10" min="0" id="new-goal-initial" value="0" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-white">
+        </div>
+        <button type="submit" class="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold transition">
+          Save Goal
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. Adjust Budgets Modal -->
+  <div id="modal-adjust-budgets" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+        <h3 class="font-bold text-base">Adjust Monthly Category Caps</h3>
+        <button id="modal-budgets-close" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+      <form id="form-adjust-budgets" class="space-y-3 mt-4 text-xs" id="budget-inputs-container">
+        <!-- Dynamically injected budget inputs -->
+        <div id="budget-edit-fields" class="space-y-3 max-h-64 overflow-y-auto pr-1"></div>
+        <button type="submit" class="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold transition">
+          Update Budget Allocations
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- JAVASCRIPT APPLICATION CORE -->
+  <!-- ============================================== -->
+  <script>
+    (function() {
+      'use strict';
+
+      // --- INITIAL DEFAULT STATE ---
+      const DEFAULT_STATE = {
+        theme: 'light',
+        user: {
+          name: 'John Doe',
+          email: 'john.doe@fintechcorp.io',
+          tier: 'Premium Platinum Client',
+          dailyWithdrawalLimit: 2500,
+          singleTxLimit: 10000,
+          currency: 'USD'
+        },
+        activeAccountId: 'acc-1',
+        accounts: [
+          {
+            id: 'acc-1',
+            accountNumber: '48921049281',
+            name: 'Primary Checking',
+            type: 'Checking',
+            balance: 14850.75,
+            currency: 'USD',
+            status: 'Active', // 'Active' or 'Frozen'
+            createdDate: '2024-01-15',
+            routingNumber: '021000021',
+            apy: 0.15
+          },
+          {
+            id: 'acc-2',
+            accountNumber: '89104829103',
+            name: 'High-Yield Wealth Savings',
+            type: 'High-Yield Savings',
+            balance: 42300.00,
+            currency: 'USD',
+            status: 'Active',
+            createdDate: '2024-03-20',
+            routingNumber: '021000021',
+            apy: 4.65
+          },
+          {
+            id: 'acc-3',
+            accountNumber: '67291049182',
+            name: 'Venture & Business Fund',
+            type: 'Business Operations',
+            balance: 28910.25,
+            currency: 'USD',
+            status: 'Active',
+            createdDate: '2024-07-10',
+            routingNumber: '021000021',
+            apy: 1.20
+          }
+        ],
+        budgets: [
+          { category: 'Housing & Rent', limit: 2200 },
+          { category: 'Food & Dining', limit: 800 },
+          { category: 'Bills & Utilities', limit: 450 },
+          { category: 'Shopping & Retail', limit: 600 },
+          { category: 'Travel & Mobility', limit: 500 },
+          { category: 'Healthcare & Wellness', limit: 300 }
+        ],
+        goals: [
+          { id: 'goal-1', name: 'Emergency Safety Net (6 Mo)', target: 25000, current: 18500, color: 'sky' },
+          { id: 'goal-2', name: 'Electric Vehicle Downpayment', target: 12000, current: 8400, color: 'emerald' },
+          { id: 'goal-3', name: 'Alpine Ski Vacation', target: 3500, current: 2800, color: 'indigo' }
+        ],
+        transactions: [
+          {
+            id: 'TX-89214',
+            timestamp: '2026-10-12 14:32',
+            accountId: 'acc-1',
+            type: 'deposit',
+            category: 'Income',
+            description: 'Bi-Weekly Executive Payroll Deposit',
+            amount: 4850.00,
+            balanceAfter: 14850.75,
+            status: 'Completed',
+            channel: 'ACH Direct Deposit'
+          },
+          {
+            id: 'TX-89213',
+            timestamp: '2026-10-11 19:15',
+            accountId: 'acc-1',
+            type: 'withdrawal',
+            category: 'Food & Dining',
+            description: 'Organic Harvest Market Groceries',
+            amount: 142.30,
+            balanceAfter: 10000.75,
+            status: 'Completed',
+            channel: 'POS Debit Card'
+          },
+          {
+            id: 'TX-89212',
+            timestamp: '2026-10-10 11:20',
+            accountId: 'acc-1',
+            type: 'bill',
+            category: 'Bills & Utilities',
+            description: 'City Power & Light - Electricity Bill',
+            amount: 185.40,
+            balanceAfter: 10143.05,
+            status: 'Completed',
+            channel: 'Online BillPay'
+          },
+          {
+            id: 'TX-89211',
+            timestamp: '2026-10-09 16:45',
+            accountId: 'acc-2',
+            type: 'deposit',
+            category: 'Investment',
+            description: 'Q3 Term Fixed Deposit Maturity Dividend',
+            amount: 620.00,
+            balanceAfter: 42300.00,
+            status: 'Completed',
+            channel: 'Compound Payout'
+          },
+          {
+            id: 'TX-89210',
+            timestamp: '2026-10-08 09:30',
+            accountId: 'acc-1',
+            type: 'transfer',
+            category: 'Housing & Rent',
+            description: 'Monthly Apartment Lease Wire',
+            amount: 1950.00,
+            balanceAfter: 10328.45,
+            status: 'Completed',
+            channel: 'Internal Wire'
+          },
+          {
+            id: 'TX-89209',
+            timestamp: '2026-10-06 20:10',
+            accountId: 'acc-1',
+            type: 'withdrawal',
+            category: 'Shopping & Retail',
+            description: 'Nordic Tech Electronics Store',
+            amount: 289.00,
+            balanceAfter: 12278.45,
+            status: 'Completed',
+            channel: 'Online Merchant'
+          },
+          {
+            id: 'TX-89208',
+            timestamp: '2026-10-04 12:00',
+            accountId: 'acc-3',
+            type: 'deposit',
+            category: 'Income',
+            description: 'Client Consulting Retainer Invoice #1042',
+            amount: 7500.00,
+            balanceAfter: 28910.25,
+            status: 'Completed',
+            channel: 'Inbound Wire'
+          }
+        ]
+      };
+
+      // --- STATE STORAGE & PERSISTENCE ---
+      let state = loadState();
+
+      function loadState() {
+        try {
+          const stored = localStorage.getItem('apex_bank_state_v1');
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            // Verify core keys exist
+            if (parsed.accounts && parsed.transactions && parsed.budgets) {
+              return parsed;
+            }
+          }
+        } catch (e) {
+          console.warn('Storage unavailable or corrupted, using defaults');
+        }
+        return JSON.parse(JSON.stringify(DEFAULT_STATE));
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem('apex_bank_state_v1', JSON.stringify(state));
+        } catch (e) {
+          console.error('Could not save to localStorage:', e);
+        }
+      }
+
+      // --- HELPERS ---
+      function formatMoney(amount, currency = state.user.currency || 'USD') {
+        const sign = amount < 0 ? '-' : '';
+        const absVal = Math.abs(amount).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+        const symbols = { USD: '$', EUR: '€', GBP: '£', INR: '₹' };
+        const sym = symbols[currency] || '$';
+        return `${sign}${sym}${absVal}`;
+      }
+
+      function getAccount(id) {
+        return state.accounts.find(a => a.id === id) || state.accounts[0];
+      }
+
+      function showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `p-4 rounded-xl shadow-lg border text-xs font-semibold flex items-center justify-between space-x-3 transition-all duration-300 transform translate-x-4 opacity-0 pointer-events-auto ${
+          type === 'success' ? 'bg-emerald-900/90 text-white border-emerald-700' :
+          type === 'error' ? 'bg-rose-900/90 text-white border-rose-700' :
+          type === 'warning' ? 'bg-amber-900/90 text-white border-amber-700' :
+          'bg-slate-900/90 text-white border-slate-700'
+        }`;
+
+        let icon = `<svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
+        if (type === 'success') {
+          icon = `<svg class="w-4 h-4 flex-shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
+        } else if (type === 'error') {
+          icon = `<svg class="w-4 h-4 flex-shrink-0 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;
+        } else if (type === 'warning') {
+          icon = `<svg class="w-4 h-4 flex-shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
+        }
+
+        toast.innerHTML = `
+          <div class="flex items-center space-x-2.5">
+            ${icon}
+            <span>${message}</span>
+          </div>
+          <button class="text-white/60 hover:text-white ml-2 text-base leading-none">&times;</button>
+        `;
+
+        const closeBtn = toast.querySelector('button');
+        closeBtn.onclick = () => {
+          toast.remove();
+        };
+
+        container.appendChild(toast);
+        // Animate in
+        requestAnimationFrame(() => {
+          toast.classList.remove('translate-x-4', 'opacity-0');
+        });
+
+        setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-x-4');
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
+      }
+
+      // --- THEME MANAGEMENT ---
+      function applyTheme(isDark) {
+        const html = document.documentElement;
+        const iconDark = document.getElementById('theme-icon-dark');
+        const iconLight = document.getElementById('theme-icon-light');
+        if (isDark) {
+          html.classList.add('dark');
+          if (iconDark) iconDark.classList.remove('hidden');
+          if (iconLight) iconLight.classList.add('hidden');
+        } else {
+          html.classList.remove('dark');
+          if (iconDark) iconDark.classList.add('hidden');
+          if (iconLight) iconLight.classList.remove('hidden');
+        }
+        state.theme = isDark ? 'dark' : 'light';
+        saveState();
+        if (window.cashflowChartInstance) updateCharts();
+      }
+
+      // --- CHARTS (CHART.JS) ---
+      let cashflowChartInstance = null;
+      let doughnutChartInstance = null;
+
+      function initCharts() {
+        const cfCtx = document.getElementById('cashflowChart');
+        const dnCtx = document.getElementById('expenseDoughnutChart');
+
+        if (cfCtx) {
+          cashflowChartInstance = new Chart(cfCtx, {
+            type: 'bar',
+            data: {
+              labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+              datasets: [
+                {
+                  label: 'Inflows ($)',
+                  data: [4200, 5600, 6100, 4800, 7200, 8470],
+                  backgroundColor: 'rgba(16, 185, 129, 0.75)',
+                  borderRadius: 6
+                },
+                {
+                  label: 'Outflows ($)',
+                  data: [2800, 3100, 3900, 3200, 4100, 3350],
+                  backgroundColor: 'rgba(239, 68, 68, 0.75)',
+                  borderRadius: 6
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'top',
+                  labels: { boxWidth: 12, font: { size: 11, family: 'Inter' } }
+                }
+              },
+              scales: {
+                x: { grid: { display: false } },
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    callback: (value) => '$' + value
+                  }
+                }
+              }
+            }
+          });
+        }
+
+        if (dnCtx) {
+          doughnutChartInstance = new Chart(dnCtx, {
+            type: 'doughnut',
+            data: {
+              labels: ['Housing & Rent', 'Food & Dining', 'Bills', 'Shopping', 'Travel', 'Health'],
+              datasets: [{
+                data: [1950, 680, 420, 510, 320, 180],
+                backgroundColor: [
+                  '#0284c7',
+                  '#10b981',
+                  '#f59e0b',
+                  '#ec4899',
+                  '#8b5cf6',
+                  '#14b8a6'
+                ],
+                borderWidth: 0
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                  labels: { boxWidth: 10, font: { size: 10, family: 'Inter' } }
+                }
+              },
+              cutout: '70%'
+            }
+          });
+        }
+      }
+
+      function updateCharts() {
+        if (!cashflowChartInstance || !doughnutChartInstance) return;
+
+        // Recalculate spending breakdown by category from actual transactions
+        const categoryMap = {};
+        state.budgets.forEach(b => { categoryMap[b.category] = 0; });
+
+        state.transactions.forEach(tx => {
+          if ((tx.type === 'withdrawal' || tx.type === 'bill' || (tx.type === 'transfer' && tx.category !== 'Transfer')) && categoryMap[tx.category] !== undefined) {
+            categoryMap[tx.category] += tx.amount;
+          }
+        });
+
+        // Update doughnut
+        const labels = Object.keys(categoryMap);
+        const data = Object.values(categoryMap).map(v => v > 0 ? v : 50); // slight baseline for visual
+        doughnutChartInstance.data.labels = labels;
+        doughnutChartInstance.data.datasets[0].data = data;
+        doughnutChartInstance.update();
+
+        // Update cashflow chart
+        cashflowChartInstance.update();
+      }
+
+      // --- RENDER FUNCTIONS ---
+
+      // 1. Header & Active Account Selectors
+      function renderAccountSelectors() {
+        const activeSelect = document.getElementById('active-account-select');
+        const depositSelect = document.getElementById('deposit-account-select');
+        const withdrawSelect = document.getElementById('withdraw-account-select');
+        const transferFromSelect = document.getElementById('transfer-from-select');
+        const transferToSelect = document.getElementById('transfer-to-internal-select');
+        const billSelect = document.getElementById('bill-account-select');
+        const filterSelect = document.getElementById('tx-filter-account');
+        const goalSourceSelect = document.getElementById('goal-source-acc');
+
+        const selects = [activeSelect, depositSelect, withdrawSelect, transferFromSelect, transferToSelect, billSelect, goalSourceSelect];
+
+        selects.forEach(sel => {
+          if (!sel) return;
+          const currentVal = sel.value;
+          sel.innerHTML = '';
+          state.accounts.forEach(acc => {
+            const opt = document.createElement('option');
+            opt.value = acc.id;
+            opt.textContent = `${acc.name} (${formatMoney(acc.balance)}) - ${acc.status === 'Frozen' ? '[FROZEN]' : 'Active'}`;
+            sel.appendChild(opt);
+          });
+          if (currentVal && state.accounts.some(a => a.id === currentVal)) {
+            sel.value = currentVal;
+          }
+        });
+
+        if (activeSelect) activeSelect.value = state.activeAccountId;
+        if (depositSelect) depositSelect.value = state.activeAccountId;
+        if (withdrawSelect) withdrawSelect.value = state.activeAccountId;
+        if (transferFromSelect) transferFromSelect.value = state.activeAccountId;
+        if (billSelect) billSelect.value = state.activeAccountId;
+        if (goalSourceSelect) goalSourceSelect.value = state.activeAccountId;
+
+        // Internal destination should be different from active if possible
+        if (transferToSelect && state.accounts.length > 1) {
+          const other = state.accounts.find(a => a.id !== state.activeAccountId);
+          if (other) transferToSelect.value = other.id;
+        }
+
+        if (filterSelect) {
+          filterSelect.innerHTML = '<option value="all">All Accounts</option>';
+          state.accounts.forEach(acc => {
+            const opt = document.createElement('option');
+            opt.value = acc.id;
+            opt.textContent = acc.name;
+            filterSelect.appendChild(opt);
+          });
+        }
+      }
+
+      // 2. Dashboard Render
+      function renderDashboard() {
+        const activeAcc = getAccount(state.activeAccountId);
+        const totalNetWorth = state.accounts.reduce((sum, acc) => sum + acc.balance, 0);
+
+        // Sum Inflows & Outflows from transactions
+        let totalIn = 0;
+        let totalOut = 0;
+        state.transactions.forEach(t => {
+          if (t.type === 'deposit') totalIn += t.amount;
+          else totalOut += t.amount;
+        });
+
+        const networthElem = document.getElementById('dash-total-networth');
+        const activeBalElem = document.getElementById('dash-active-balance');
+        const activeNumElem = document.getElementById('dash-active-num');
+        const activeLblElem = document.getElementById('dash-active-account-label');
+        const inflowElem = document.getElementById('dash-total-inflow');
+        const outflowElem = document.getElementById('dash-total-outflow');
+
+        if (networthElem) networthElem.textContent = formatMoney(totalNetWorth);
+        if (activeBalElem) activeBalElem.textContent = formatMoney(activeAcc.balance);
+        if (activeNumElem) activeNumElem.textContent = `Acc: ****${activeAcc.accountNumber.slice(-4)} (${activeAcc.type})`;
+        if (activeLblElem) activeLblElem.textContent = `${activeAcc.name}`;
+        if (inflowElem) inflowElem.textContent = formatMoney(totalIn);
+        if (outflowElem) outflowElem.textContent = formatMoney(totalOut);
+
+        // Financial health score
+        const savingsRate = totalIn > 0 ? Math.max(0, Math.min(100, Math.round(((totalIn - totalOut) / totalIn) * 100))) : 25;
+        const healthScore = Math.min(99, Math.max(45, Math.round(50 + (savingsRate * 0.45))));
+        
+        const scoreElem = document.getElementById('health-score-val');
+        const rateElem = document.getElementById('health-savings-rate');
+        const badgeElem = document.getElementById('health-grade-badge');
+        const activeCountElem = document.getElementById('health-active-accounts');
+
+        if (scoreElem) scoreElem.textContent = healthScore;
+        if (rateElem) rateElem.textContent = `${savingsRate}%`;
+        if (activeCountElem) activeCountElem.textContent = state.accounts.length;
+        if (badgeElem) {
+          if (healthScore >= 80) {
+            badgeElem.textContent = 'Excellent';
+            badgeElem.className = 'text-xs px-2 py-0.5 rounded-full font-semibold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300';
+          } else if (healthScore >= 65) {
+            badgeElem.textContent = 'Good';
+            badgeElem.className = 'text-xs px-2 py-0.5 rounded-full font-semibold bg-sky-100 dark:bg-sky-900/60 text-sky-700 dark:text-sky-300';
+          } else {
+            badgeElem.textContent = 'Moderate';
+            badgeElem.className = 'text-xs px-2 py-0.5 rounded-full font-semibold bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300';
+          }
+        }
+
+        // Recent transactions table (top 5)
+        const recentTbody = document.getElementById('dash-recent-tx-tbody');
+        if (recentTbody) {
+          recentTbody.innerHTML = '';
+          const recentList = state.transactions.slice(0, 5);
+          if (recentList.length === 0) {
+            recentTbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-slate-400">No transactions recorded yet.</td></tr>`;
+          } else {
+            recentList.forEach(tx => {
+              const acc = getAccount(tx.accountId);
+              const tr = document.createElement('tr');
+              tr.className = 'hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition';
+              
+              const isPlus = tx.type === 'deposit';
+              const amtColor = isPlus ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-800 dark:text-slate-100';
+              const prefix = isPlus ? '+' : '-';
+
+              tr.innerHTML = `
+                <td class="py-2.5 px-3 text-slate-500 whitespace-nowrap">${tx.timestamp}</td>
+                <td class="py-2.5 px-3 font-semibold text-slate-800 dark:text-slate-200">${tx.description}</td>
+                <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">${tx.category}</span></td>
+                <td class="py-2.5 px-3 uppercase text-[10px] font-bold tracking-wider text-slate-500">${tx.type}</td>
+                <td class="py-2.5 px-3 text-slate-500">${acc ? acc.name : 'Unknown'}</td>
+                <td class="py-2.5 px-3 text-right font-bold ${amtColor}">${prefix}${formatMoney(tx.amount)}</td>
+                <td class="py-2.5 px-3 text-center">
+                  <button data-tx-id="${tx.id}" class="btn-open-receipt text-sky-600 hover:text-sky-700 font-semibold underline">View</button>
+                </td>
+              `;
+              recentTbody.appendChild(tr);
+            });
+          }
+        }
+      }
+
+      // 3. Accounts View Render
+      function renderAccounts() {
+        const grid = document.getElementById('accounts-cards-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        state.accounts.forEach(acc => {
+          const isSelected = acc.id === state.activeAccountId;
+          const card = document.createElement('div');
+          card.className = `p-5 rounded-2xl border transition-all duration-200 ${
+            isSelected 
+              ? 'border-sky-500 bg-sky-50/30 dark:bg-sky-950/20 shadow-md ring-2 ring-sky-500/20' 
+              : 'border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:shadow'
+          }`;
+
+          const isFrozen = acc.status === 'Frozen';
+
+          card.innerHTML = `
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ${
+                  isFrozen ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300'
+                }">${acc.status}</span>
+                <h4 class="font-bold text-base text-slate-900 dark:text-white mt-1.5">${acc.name}</h4>
+                <p class="text-xs text-slate-400 font-mono">**** ${acc.accountNumber.slice(-4)}</p>
+              </div>
+              <div class="p-2.5 rounded-xl ${isSelected ? 'bg-sky-500 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/80">
+              <span class="text-[10px] uppercase font-semibold text-slate-400">Available Balance</span>
+              <div class="text-2xl font-black tracking-tight text-slate-800 dark:text-white">${formatMoney(acc.balance)}</div>
+              <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mt-2">
+                <span>APY Yield: <strong>${acc.apy || 0.1}%</strong></span>
+                <span>Type: <strong>${acc.type}</strong></span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/80 flex items-center space-x-2">
+              <button data-acc-id="${acc.id}" class="btn-select-account flex-1 py-1.5 rounded-lg text-xs font-bold transition ${
+                isSelected ? 'bg-sky-600 text-white' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200'
+              }">
+                ${isSelected ? 'Active Selection' : 'Set as Active'}
+              </button>
+              <button data-acc-id="${acc.id}" class="btn-toggle-freeze px-3 py-1.5 rounded-lg text-xs font-semibold border transition ${
+                isFrozen 
+                  ? 'border-emerald-500 text-emerald-600 hover:bg-emerald-50' 
+                  : 'border-rose-400 text-rose-600 hover:bg-rose-50'
+              }">
+                ${isFrozen ? 'Unfreeze' : 'Freeze'}
+              </button>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+        // Account Details Panel
+        const activeAcc = getAccount(state.activeAccountId);
+        const metaGrid = document.getElementById('account-meta-grid');
+        if (metaGrid && activeAcc) {
+          metaGrid.innerHTML = `
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+              <span class="text-slate-400 block mb-0.5">Full Account Number:</span>
+              <span class="font-mono font-bold text-slate-800 dark:text-slate-100">${activeAcc.accountNumber}</span>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+              <span class="text-slate-400 block mb-0.5">ABA Routing Transit:</span>
+              <span class="font-mono font-bold text-slate-800 dark:text-slate-100">${activeAcc.routingNumber || '021000021'}</span>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+              <span class="text-slate-400 block mb-0.5">Established Date:</span>
+              <span class="font-bold text-slate-800 dark:text-slate-100">${activeAcc.createdDate}</span>
+            </div>
+          `;
+        }
+      }
+
+      // 4. Ledger & Search Filter Render
+      function renderLedger() {
+        const tbody = document.getElementById('tx-ledger-tbody');
+        const countDisplay = document.getElementById('tx-count-display');
+        const searchVal = (document.getElementById('tx-search-input')?.value || '').toLowerCase().trim();
+        const typeFilter = document.getElementById('tx-filter-type')?.value || 'all';
+        const accFilter = document.getElementById('tx-filter-account')?.value || 'all';
+
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        const filtered = state.transactions.filter(tx => {
+          if (typeFilter !== 'all' && tx.type !== typeFilter) return false;
+          if (accFilter !== 'all' && tx.accountId !== accFilter) return false;
+          if (searchVal) {
+            const haystack = `${tx.id} ${tx.description} ${tx.category} ${tx.channel || ''}`.toLowerCase();
+            if (!haystack.includes(searchVal)) return false;
+          }
+          return true;
+        });
+
+        if (countDisplay) {
+          countDisplay.textContent = `Showing ${filtered.length} of ${state.transactions.length} transactions`;
+        }
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="9" class="py-6 text-center text-slate-400">No transactions match your search or filter parameters.</td></tr>`;
+          return;
+        }
+
+        filtered.forEach(tx => {
+          const acc = getAccount(tx.accountId);
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition';
+
+          const isPlus = tx.type === 'deposit';
+          const amtColor = isPlus ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-800 dark:text-slate-100';
+          const prefix = isPlus ? '+' : '-';
+
+          tr.innerHTML = `
+            <td class="py-3 px-4 font-mono font-bold text-slate-500">${tx.id}</td>
+            <td class="py-3 px-4 text-slate-500 whitespace-nowrap">${tx.timestamp}</td>
+            <td class="py-3 px-4 font-semibold text-slate-800 dark:text-slate-200">${tx.description}</td>
+            <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">${tx.category}</span></td>
+            <td class="py-3 px-4 text-slate-500">${acc ? acc.name : 'Unknown'}</td>
+            <td class="py-3 px-4 text-right font-bold ${amtColor}">${prefix}${formatMoney(tx.amount)}</td>
+            <td class="py-3 px-4 text-right font-mono text-slate-500">${formatMoney(tx.balanceAfter)}</td>
+            <td class="py-3 px-4 text-center">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                ${tx.status || 'Completed'}
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center">
+              <button data-tx-id="${tx.id}" class="btn-open-receipt px-2.5 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded text-slate-700 dark:text-slate-200 font-bold transition">
+                Receipt
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // 5. Finance Management & Budgets Render
+      function renderFinance() {
+        const budgetContainer = document.getElementById('budget-categories-list');
+        const goalsGrid = document.getElementById('goals-cards-grid');
+
+        // Calculate actual spent per category
+        const spentMap = {};
+        state.budgets.forEach(b => { spentMap[b.category] = 0; });
+        state.transactions.forEach(tx => {
+          if (tx.type !== 'deposit' && spentMap[tx.category] !== undefined) {
+            spentMap[tx.category] += tx.amount;
+          }
+        });
+
+        if (budgetContainer) {
+          budgetContainer.innerHTML = '';
+          state.budgets.forEach(b => {
+            const spent = spentMap[b.category] || 0;
+            const pct = Math.min(100, Math.round((spent / b.limit) * 100));
+            
+            let barColor = 'bg-emerald-500';
+            let statusText = 'On Track';
+            if (pct >= 90) {
+              barColor = 'bg-rose-500';
+              statusText = 'Over Budget Cap!';
+            } else if (pct >= 75) {
+              barColor = 'bg-amber-500';
+              statusText = 'Warning: Approaching Cap';
+            }
+
+            const item = document.createElement('div');
+            item.className = 'space-y-1.5';
+            item.innerHTML = `
+              <div class="flex items-center justify-between text-xs font-semibold">
+                <span class="text-slate-800 dark:text-slate-200">${b.category}</span>
+                <div class="flex items-center space-x-2">
+                  <span class="text-[10px] text-slate-400">(${statusText})</span>
+                  <span>${formatMoney(spent)} / ${formatMoney(b.limit)} (${pct}%)</span>
+                </div>
+              </div>
+              <div class="w-full bg-slate-100 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
+                <div class="${barColor} h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+              </div>
+            `;
+            budgetContainer.appendChild(item);
+          });
+        }
+
+        // Render Goals
+        if (goalsGrid) {
+          goalsGrid.innerHTML = '';
+          state.goals.forEach(goal => {
+            const pct = Math.min(100, Math.round((goal.current / goal.target) * 100));
+            const card = document.createElement('div');
+            card.className = 'p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 flex flex-col justify-between';
+            card.innerHTML = `
+              <div>
+                <div class="flex items-center justify-between">
+                  <h4 class="font-bold text-sm text-slate-800 dark:text-white">${goal.name}</h4>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300">${pct}%</span>
+                </div>
+                <div class="mt-3">
+                  <div class="flex items-baseline justify-between text-xs">
+                    <span class="text-lg font-extrabold text-sky-600 dark:text-sky-400">${formatMoney(goal.current)}</span>
+                    <span class="text-slate-400">Target: ${formatMoney(goal.target)}</span>
+                  </div>
+                  <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden mt-2">
+                    <div class="bg-sky-600 h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-700/60 flex space-x-2">
+                <button data-goal-id="${goal.id}" class="btn-contribute-goal flex-1 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-bold transition">
+                  Contribute Funds
+                </button>
+              </div>
+            `;
+            goalsGrid.appendChild(card);
+          });
+        }
+      }
+
+      // --- CALCULATOR LOGIC ---
+      function calculateLoanEMI() {
+        const principal = parseFloat(document.getElementById('loan-amount-slider')?.value || 10000);
+        const annualRate = parseFloat(document.getElementById('loan-rate-slider')?.value || 8.5);
+        const tenureMonths = parseInt(document.getElementById('loan-tenure-slider')?.value || 24, 10);
+
+        const monthlyRate = (annualRate / 100) / 12;
+        // EMI formula: P * r * (1 + r)^n / ((1 + r)^n - 1)
+        const emi = (principal * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths)) / (Math.pow(1 + monthlyRate, tenureMonths) - 1);
+        const totalPayment = emi * tenureMonths;
+        const totalInterest = totalPayment - principal;
+
+        document.getElementById('loan-amount-val').textContent = formatMoney(principal);
+        document.getElementById('loan-rate-val').textContent = `${annualRate}%`;
+        document.getElementById('loan-tenure-val').textContent = `${tenureMonths} Months (${(tenureMonths / 12).toFixed(1)} Yrs)`;
+
+        document.getElementById('calc-emi-result').textContent = formatMoney(emi);
+        document.getElementById('calc-total-interest').textContent = formatMoney(totalInterest);
+        document.getElementById('calc-total-repayment').textContent = formatMoney(totalPayment);
+      }
+
+      function calculateFixedDeposit() {
+        const principal = parseFloat(document.getElementById('fd-principal-input')?.value || 5000);
+        const rate = parseFloat(document.getElementById('fd-rate-input')?.value || 6.75) / 100;
+        const years = parseFloat(document.getElementById('fd-period-select')?.value || 3);
+        const compoundsPerYear = 4; // Quarterly
+
+        // Compound interest: A = P * (1 + r/n)^(n*t)
+        const maturity = principal * Math.pow(1 + (rate / compoundsPerYear), compoundsPerYear * years);
+        const interest = maturity - principal;
+
+        document.getElementById('fd-maturity-result').textContent = formatMoney(maturity);
+        document.getElementById('fd-interest-result').textContent = `+${formatMoney(interest)}`;
+      }
+
+      // --- CSV EXPORT FUNCTION ---
+      function exportTransactionsCSV() {
+        if (state.transactions.length === 0) {
+          showToast('No transactions to export', 'warning');
+          return;
+        }
+
+        const headers = ['Reference ID', 'Timestamp', 'Account', 'Type', 'Category', 'Description', 'Amount', 'Balance After', 'Status', 'Channel'];
+        const rows = state.transactions.map(t => {
+          const acc = getAccount(t.accountId);
+          return [
+            t.id,
+            `"${t.timestamp}"`,
+            `"${acc ? acc.name : t.accountId}"`,
+            t.type,
+            `"${t.category}"`,
+            `"${t.description.replace(/"/g, '""')}"`,
+            t.amount,
+            t.balanceAfter,
+            t.status,
+            `"${t.channel || ''}"`
+          ].join(',');
+        });
+
+        const csvContent = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `ApexBank_Statement_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        showToast('Official CSV statement downloaded successfully!', 'success');
+      }
+
+      // --- FULL APP RE-RENDER ---
+      function reRenderAll() {
+        renderAccountSelectors();
+        renderDashboard();
+        renderAccounts();
+        renderLedger();
+        renderFinance();
+        updateCharts();
+      }
+
+      // --- TAB NAVIGATION ---
+      function setupTabs() {
+        const navButtons = document.querySelectorAll('.nav-item');
+        const views = document.querySelectorAll('.tab-view');
+        const pageTitle = document.getElementById('page-title');
+        const pageSubtitle = document.getElementById('page-subtitle');
+
+        const titleMap = {
+          dashboard: { title: 'Financial Dashboard', subtitle: 'Real-time banking metrics & wealth insights' },
+          accounts: { title: 'Account Portfolio', subtitle: 'Manage active cards, checking, and savings accounts' },
+          operations: { title: 'Transact & Transfer', subtitle: 'Deposit, withdraw, wire, and execute bill payments' },
+          history: { title: 'Transaction Ledger', subtitle: 'Audit log, search, filters & statement downloads' },
+          finance: { title: 'Finance & Budgets', subtitle: 'Budget caps, expense distributions & savings goals' },
+          loans: { title: 'Credit & Investments', subtitle: 'Loan EMI calculators & fixed term deposits' },
+          settings: { title: 'Security & Governance', subtitle: 'Limits, currency preferences, and profile settings' }
+        };
+
+        navButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const targetTab = btn.getAttribute('data-tab');
+            
+            navButtons.forEach(b => {
+              b.classList.remove('active', 'text-sky-400', 'bg-slate-800/80');
+              b.classList.add('text-slate-300');
+            });
+            btn.classList.add('active', 'text-sky-400', 'bg-slate-800/80');
+            btn.classList.remove('text-slate-300');
+
+            views.forEach(v => {
+              if (v.id === `view-${targetTab}`) {
+                v.classList.remove('hidden');
+              } else {
+                v.classList.add('hidden');
+              }
+            });
+
+            if (titleMap[targetTab]) {
+              pageTitle.textContent = titleMap[targetTab].title;
+              pageSubtitle.textContent = titleMap[targetTab].subtitle;
+            }
+
+            if (targetTab === 'dashboard' || targetTab === 'finance') {
+              setTimeout(updateCharts, 50);
+            }
+          });
+        });
+
+        // Quick Jump buttons
+        document.getElementById('btn-goto-finance')?.addEventListener('click', () => {
+          document.querySelector('button[data-tab="finance"]')?.click();
+        });
+        document.getElementById('btn-view-all-tx')?.addEventListener('click', () => {
+          document.querySelector('button[data-tab="history"]')?.click();
+        });
+        document.getElementById('btn-quick-deposit')?.addEventListener('click', () => {
+          document.querySelector('button[data-tab="operations"]')?.click();
+          document.getElementById('op-tab-deposit-btn')?.click();
+        });
+        document.getElementById('btn-quick-transfer')?.addEventListener('click', () => {
+          document.querySelector('button[data-tab="operations"]')?.click();
+          document.getElementById('op-tab-transfer-btn')?.click();
+        });
+      }
+
+      // --- OPERATIONS SUB TABS ---
+      function setupOpSubTabs() {
+        const subTabs = [
+          { btn: document.getElementById('op-tab-deposit-btn'), form: document.getElementById('form-deposit') },
+          { btn: document.getElementById('op-tab-withdraw-btn'), form: document.getElementById('form-withdraw') },
+          { btn: document.getElementById('op-tab-transfer-btn'), form: document.getElementById('form-transfer') },
+          { btn: document.getElementById('op-tab-bill-btn'), form: document.getElementById('form-bill') },
+        ];
+
+        subTabs.forEach(item => {
+          if (!item.btn) return;
+          item.btn.addEventListener('click', () => {
+            subTabs.forEach(s => {
+              s.btn.classList.remove('active', 'border-sky-600', 'text-sky-600', 'dark:text-sky-400', 'bg-white', 'dark:bg-slate-800');
+              s.btn.classList.add('border-transparent', 'text-slate-500');
+              s.form.classList.add('hidden');
+            });
+            item.btn.classList.add('active', 'border-sky-600', 'text-sky-600', 'dark:text-sky-400', 'bg-white', 'dark:bg-slate-800');
+            item.btn.classList.remove('border-transparent', 'text-slate-500');
+            item.form.classList.remove('hidden');
+          });
+        });
+
+        // Transfer mode toggles (internal vs external)
+        const modeRadios = document.querySelectorAll('input[name="transfer-mode"]');
+        const internalWrap = document.getElementById('transfer-internal-dest-wrap');
+        const externalWrap = document.getElementById('transfer-external-dest-wrap');
+
+        modeRadios.forEach(radio => {
+          radio.addEventListener('change', () => {
+            if (radio.value === 'internal') {
+              internalWrap.classList.remove('hidden');
+              externalWrap.classList.add('hidden');
+            } else {
+              internalWrap.classList.add('hidden');
+              externalWrap.classList.remove('hidden');
+            }
+          });
+        });
+      }
+
+      // --- SETUP FORMS & TRANSACTIONS ---
+      function setupForms() {
+        // 1. DEPOSIT
+        document.getElementById('form-deposit')?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const targetAccId = document.getElementById('deposit-account-select').value;
+          const amount = parseFloat(document.getElementById('deposit-amount').value);
+          const method = document.getElementById('deposit-method').value;
+          const memo = document.getElementById('deposit-memo').value || 'Funds Deposited';
+
+          const acc = getAccount(targetAccId);
+          if (!acc) return;
+          if (acc.status === 'Frozen') {
+            showToast('Transaction declined: Target account is currently Frozen.', 'error');
+            return;
+          }
+
+          acc.balance += amount;
+          const tx = {
+            id: 'TX-' + Math.floor(10000 + Math.random() * 90000),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+            accountId: acc.id,
+            type: 'deposit',
+            category: 'Income',
+            description: memo,
+            amount: amount,
+            balanceAfter: acc.balance,
+            status: 'Completed',
+            channel: method
+          };
+
+          state.transactions.unshift(tx);
+          saveState();
+          reRenderAll();
+          e.target.reset();
+          showToast(`Successfully deposited ${formatMoney(amount)} into ${acc.name}!`, 'success');
+        });
+
+        // 2. WITHDRAW
+        document.getElementById('form-withdraw')?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const sourceAccId = document.getElementById('withdraw-account-select').value;
+          const amount = parseFloat(document.getElementById('withdraw-amount').value);
+          const channel = document.getElementById('withdraw-channel').value;
+          const pin = document.getElementById('withdraw-pin').value;
+
+          const acc = getAccount(sourceAccId);
+          if (!acc) return;
+          if (acc.status === 'Frozen') {
+            showToast('Transaction declined: Source account is Frozen.', 'error');
+            return;
+          }
+          if (amount > acc.balance) {
+            showToast(`Insufficient Funds! Current balance: ${formatMoney(acc.balance)}`, 'error');
+            return;
+          }
+          if (amount > state.user.dailyWithdrawalLimit) {
+            showToast(`Daily limit exceeded! Max allowed per withdrawal: ${formatMoney(state.user.dailyWithdrawalLimit)}`, 'error');
+            return;
+          }
+
+          acc.balance -= amount;
+          const tx = {
+            id: 'TX-' + Math.floor(10000 + Math.random() * 90000),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+            accountId: acc.id,
+            type: 'withdrawal',
+            category: 'Cash Outflow',
+            description: `Cash Withdrawal (${channel})`,
+            amount: amount,
+            balanceAfter: acc.balance,
+            status: 'Completed',
+            channel: channel
+          };
+
+          state.transactions.unshift(tx);
+          saveState();
+          reRenderAll();
+          e.target.reset();
+          showToast(`Successfully withdrew ${formatMoney(amount)} from ${acc.name}!`, 'success');
+        });
+
+        // 3. TRANSFER
+        document.getElementById('form-transfer')?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const fromAccId = document.getElementById('transfer-from-select').value;
+          const amount = parseFloat(document.getElementById('transfer-amount').value);
+          const category = document.getElementById('transfer-category').value;
+          const memo = document.getElementById('transfer-memo').value || 'Fund Transfer';
+          const mode = document.querySelector('input[name="transfer-mode"]:checked')?.value || 'internal';
+
+          const fromAcc = getAccount(fromAccId);
+          if (!fromAcc) return;
+          if (fromAcc.status === 'Frozen') {
+            showToast('Transfer blocked: Source account is Frozen.', 'error');
+            return;
+          }
+          if (amount > fromAcc.balance) {
+            showToast(`Insufficient funds in ${fromAcc.name}!`, 'error');
+            return;
+          }
+          if (amount > state.user.singleTxLimit) {
+            showToast(`Amount exceeds single transfer limit of ${formatMoney(state.user.singleTxLimit)}`, 'error');
+            return;
+          }
+
+          if (mode === 'internal') {
+            const toAccId = document.getElementById('transfer-to-internal-select').value;
+            if (toAccId === fromAccId) {
+              showToast('Source and destination accounts cannot be identical.', 'warning');
+              return;
+            }
+            const toAcc = getAccount(toAccId);
+            if (!toAcc) return;
+
+            fromAcc.balance -= amount;
+            toAcc.balance += amount;
+
+            const txOut = {
+              id: 'TX-' + Math.floor(10000 + Math.random() * 90000),
+              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+              accountId: fromAcc.id,
+              type: 'transfer',
+              category: category,
+              description: `Transfer to ${toAcc.name} (${memo})`,
+              amount: amount,
+              balanceAfter: fromAcc.balance,
+              status: 'Completed',
+              channel: 'Internal Transfer'
+            };
+            const txIn = {
+              id: 'TX-' + Math.floor(10000 + Math.random() * 90000),
+              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+              accountId: toAcc.id,
+              type: 'deposit',
+              category: 'Transfer',
+              description: `Transfer from ${fromAcc.name} (${memo})`,
+              amount: amount,
+              balanceAfter: toAcc.balance,
+              status: 'Completed',
+              channel: 'Internal Transfer'
+            };
+
+            state.transactions.unshift(txOut, txIn);
+            showToast(`Successfully transferred ${formatMoney(amount)} to ${toAcc.name}!`, 'success');
+          } else {
+            // External Transfer
+            const recipient = document.getElementById('transfer-ext-name').value || 'External Recipient';
+            const recipientAcc = document.getElementById('transfer-ext-acc').value || 'N/A';
+
+            fromAcc.balance -= amount;
+            const txOut = {
+              id: 'TX-' + Math.floor(10000 + Math.random() * 90000),
+              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+              accountId: fromAcc.id,
+              type: 'transfer',
+              category: category,
+              description: `Wire to ${recipient} (Acc: ${recipientAcc}) - ${memo}`,
+              amount: amount,
+              balanceAfter: fromAcc.balance,
+              status: 'Completed',
+              channel: 'External Wire'
+            };
+            state.transactions.unshift(txOut);
+            showToast(`Wire transfer of ${formatMoney(amount)} to ${recipient} executed!`, 'success');
+          }
+
+          saveState();
+          reRenderAll();
+          e.target.reset();
+        });
+
+        // 4. BILL PAYMENT
+        document.getElementById('form-bill')?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const provider = document.getElementById('bill-provider-select').value;
+          const fromAccId = document.getElementById('bill-account-select').value;
+          const amount = parseFloat(document.getElementById('bill-amount').value);
+          const billAccNum = document.getElementById('bill-account-number').value;
+
+          const fromAcc = getAccount(fromAccId);
+          if (!fromAcc) return;
+          if (fromAcc.status === 'Frozen') {
+            showToast('Payment blocked: Account is Frozen.', 'error');
+            return;
+          }
+          if (amount > fromAcc.balance) {
+            showToast(`Insufficient funds for bill payment in ${fromAcc.name}!`, 'error');
+            return;
+          }
+
+          fromAcc.balance -= amount;
+          const tx = {
+            id: 'TX-' + Math.floor(10000 + Math.random() * 90000),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+            accountId: fromAcc.id,
+            type: 'bill',
+            category: 'Bills & Utilities',
+            description: `Payment to ${provider} (ID: ${billAccNum})`,
+            amount: amount,
+            balanceAfter: fromAcc.balance,
+            status: 'Completed',
+            channel: 'Electronic BillPay'
+          };
+
+          state.transactions.unshift(tx);
+          saveState();
+          reRenderAll();
+          e.target.reset();
+          showToast(`Bill paid! ${formatMoney(amount)} sent to ${provider}`, 'success');
+        });
+
+        // 5. CREATE NEW ACCOUNT MODAL & FORM
+        const modalNewAcc = document.getElementById('modal-new-account');
+        document.getElementById('btn-open-new-account-modal')?.addEventListener('click', () => {
+          modalNewAcc?.classList.remove('hidden');
+        });
+        document.getElementById('modal-new-account-close')?.addEventListener('click', () => {
+          modalNewAcc?.classList.add('hidden');
+        });
+
+        document.getElementById('form-create-account')?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const name = document.getElementById('new-acc-name').value;
+          const type = document.getElementById('new-acc-type').value;
+          const deposit = parseFloat(document.getElementById('new-acc-deposit').value);
+
+          const newAcc = {
+            id: 'acc-' + (state.accounts.length + 1) + '-' + Date.now().toString().slice(-4),
+            accountNumber: Math.floor(10000000000 + Math.random() * 90000000000).toString(),
+            name: name,
+            type: type,
+            balance: deposit,
+            currency: 'USD',
+            status: 'Active',
+            createdDate: new Date().toISOString().slice(0, 10),
+            routingNumber: '021000021',
+            apy: type.includes('Savings') ? 4.5 : (type.includes('Investment') ? 7.2 : 0.2)
+          };
+
+          state.accounts.push(newAcc);
+          state.activeAccountId = newAcc.id;
+
+          const tx = {
+            id: 'TX-' + Math.floor(10000 + Math.random() * 90000),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+            accountId: newAcc.id,
+            type: 'deposit',
+            category: 'Account Opening',
+            description: `Initial Opening Deposit for ${name}`,
+            amount: deposit,
+            balanceAfter: deposit,
+            status: 'Completed',
+            channel: 'Initial Credit'
+          };
+          state.transactions.unshift(tx);
+
+          saveState();
+          reRenderAll();
+          e.target.reset();
+          modalNewAcc?.classList.add('hidden');
+          showToast(`Account "${name}" created and initialized with ${formatMoney(deposit)}!`, 'success');
+        });
+
+        // 6. LOAN SIMULATION DISBURSEMENT
+        document.getElementById('btn-apply-loan-disburse')?.addEventListener('click', () => {
+          const principal = parseFloat(document.getElementById('loan-amount-slider').value);
+          const activeAcc = getAccount(state.activeAccountId);
+
+          activeAcc.balance += principal;
+          const tx = {
+            id: 'TX-LN-' + Math.floor(10000 + Math.random() * 90000),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+            accountId: activeAcc.id,
+            type: 'loan',
+            category: 'Credit Facility',
+            description: `Apex Personal Loan Disbursement ($${principal.toLocaleString()})`,
+            amount: principal,
+            balanceAfter: activeAcc.balance,
+            status: 'Completed',
+            channel: 'Credit Facility'
+          };
+
+          state.transactions.unshift(tx);
+          saveState();
+          reRenderAll();
+          showToast(`Loan of ${formatMoney(principal)} approved and disbursed into ${activeAcc.name}!`, 'success');
+        });
+
+        // 7. FIXED DEPOSIT ISSUANCE
+        document.getElementById('btn-create-fd-term')?.addEventListener('click', () => {
+          const principal = parseFloat(document.getElementById('fd-principal-input').value);
+          const years = document.getElementById('fd-period-select').value;
+          const activeAcc = getAccount(state.activeAccountId);
+
+          if (principal > activeAcc.balance) {
+            showToast(`Insufficient funds in ${activeAcc.name} to establish fixed deposit.`, 'error');
+            return;
+          }
+
+          activeAcc.balance -= principal;
+          const tx = {
+            id: 'TX-FD-' + Math.floor(10000 + Math.random() * 90000),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+            accountId: activeAcc.id,
+            type: 'withdrawal',
+            category: 'Investment',
+            description: `Lock-in ${years}-Year Fixed Deposit Certificate`,
+            amount: principal,
+            balanceAfter: activeAcc.balance,
+            status: 'Completed',
+            channel: 'Term Certificate'
+          };
+
+          state.transactions.unshift(tx);
+          saveState();
+          reRenderAll();
+          showToast(`Term Deposit Certificate for ${formatMoney(principal)} created successfully!`, 'success');
+        });
+
+        // 8. GOAL CONTRIBUTION MODAL
+        const modalGoal = document.getElementById('modal-goal-contribute');
+        document.getElementById('modal-goal-close')?.addEventListener('click', () => {
+          modalGoal?.classList.add('hidden');
+        });
+
+        document.getElementById('form-contribute-goal')?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const goalId = document.getElementById('goal-target-id').value;
+          const sourceAccId = document.getElementById('goal-source-acc').value;
+          const amount = parseFloat(document.getElementById('goal-contribute-amount').value);
+
+          const goal = state.goals.find(g => g.id === goalId);
+          const acc = getAccount(sourceAccId);
+          if (!goal || !acc) return;
+
+          if (amount > acc.balance) {
+            showToast(`Insufficient balance in ${acc.name}!`, 'error');
+            return;
+          }
+
+          acc.balance -= amount;
+          goal.current += amount;
+
+          const tx = {
+            id: 'TX-GL-' + Math.floor(10000 + Math.random() * 90000),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+            accountId: acc.id,
+            type: 'withdrawal',
+            category: 'Investment',
+            description: `Goal Contribution: ${goal.name}`,
+            amount: amount,
+            balanceAfter: acc.balance,
+            status: 'Completed',
+            channel: 'Savings Allocation'
+          };
+
+          state.transactions.unshift(tx);
+          saveState();
+          reRenderAll();
+          modalGoal?.classList.add('hidden');
+          e.target.reset();
+          showToast(`Added ${formatMoney(amount)} to "${goal.name}"!`, 'success');
+        });
+
+        // 9. CREATE NEW SAVINGS GOAL
+        const modalNewGoal = document.getElementById('modal-new-goal');
+        document.getElementById('btn-add-goal-modal')?.addEventListener('click', () => {
+          modalNewGoal?.classList.remove('hidden');
+        });
+        document.getElementById('modal-new-goal-close')?.addEventListener('click', () => {
+          modalNewGoal?.classList.add('hidden');
+        });
+
+        document.getElementById('form-create-goal')?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const name = document.getElementById('new-goal-name').value;
+          const target = parseFloat(document.getElementById('new-goal-target').value);
+          const initial = parseFloat(document.getElementById('new-goal-initial').value || 0);
+
+          const newGoal = {
+            id: 'goal-' + Date.now().toString().slice(-4),
+            name: name,
+            target: target,
+            current: initial,
+            color: 'sky'
+          };
+
+          state.goals.push(newGoal);
+          saveState();
+          reRenderAll();
+          modalNewGoal?.classList.add('hidden');
+          e.target.reset();
+          showToast(`Savings target "${name}" registered!`, 'success');
+        });
+
+        // 10. ADJUST BUDGETS MODAL
+        const modalAdjustBudgets = document.getElementById('modal-adjust-budgets');
+        document.getElementById('btn-adjust-budgets-modal')?.addEventListener('click', () => {
+          const container = document.getElementById('budget-edit-fields');
+          if (container) {
+            container.innerHTML = '';
+            state.budgets.forEach((b, idx) => {
+              const row = document.createElement('div');
+              row.className = 'flex items-center justify-between space-x-2';
+              row.innerHTML = `
+                <span class="font-medium text-slate-700 dark:text-slate-300">${b.category}</span>
+                <input type="number" data-idx="${idx}" step="50" min="50" value="${b.limit}" class="budget-limit-input w-28 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1 text-right">
+              `;
+              container.appendChild(row);
+            });
+          }
+          modalAdjustBudgets?.classList.remove('hidden');
+        });
+        document.getElementById('modal-budgets-close')?.addEventListener('click', () => {
+          modalAdjustBudgets?.classList.add('hidden');
+        });
+
+        document.getElementById('form-adjust-budgets')?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const inputs = document.querySelectorAll('.budget-limit-input');
+          inputs.forEach(inp => {
+            const idx = parseInt(inp.getAttribute('data-idx'), 10);
+            const val = parseFloat(inp.value);
+            if (!isNaN(val) && val > 0 && state.budgets[idx]) {
+              state.budgets[idx].limit = val;
+            }
+          });
+          saveState();
+          reRenderAll();
+          modalAdjustBudgets?.classList.add('hidden');
+          showToast('Budget envelopes updated successfully!', 'success');
+        });
+
+        // 11. SECURITY & SETTINGS FORM
+        document.getElementById('btn-save-security-settings')?.addEventListener('click', () => {
+          const dailyLimit = parseFloat(document.getElementById('setting-daily-limit').value);
+          const singleLimit = parseFloat(document.getElementById('setting-single-tx-limit').value);
+          const curr = document.getElementById('setting-currency').value;
+
+          state.user.dailyWithdrawalLimit = dailyLimit;
+          state.user.singleTxLimit = singleLimit;
+          state.user.currency = curr;
+
+          saveState();
+          reRenderAll();
+          showToast('Security thresholds and currency saved!', 'success');
+        });
+
+        document.getElementById('btn-save-profile')?.addEventListener('click', () => {
+          const name = document.getElementById('setting-client-name').value;
+          const email = document.getElementById('setting-client-email').value;
+
+          state.user.name = name;
+          state.user.email = email;
+          const userDisplay = document.getElementById('user-display-name');
+          if (userDisplay) userDisplay.textContent = name;
+
+          saveState();
+          showToast('Profile credentials saved!', 'success');
+        });
+
+        // 12. RESET DEMO DATA
+        document.getElementById('btn-reset-demo-data')?.addEventListener('click', () => {
+          state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+          saveState();
+          reRenderAll();
+          showToast('Demo data reinitialized to factory defaults!', 'info');
+        });
+
+        // 13. EXPORT CSV BUTTON
+        document.getElementById('btn-export-csv')?.addEventListener('click', exportTransactionsCSV);
+
+        // 14. SEARCH & FILTERS ON LEDGER
+        document.getElementById('tx-search-input')?.addEventListener('input', renderLedger);
+        document.getElementById('tx-filter-type')?.addEventListener('change', renderLedger);
+        document.getElementById('tx-filter-account')?.addEventListener('change', renderLedger);
+        document.getElementById('btn-reset-filters')?.addEventListener('click', () => {
+          document.getElementById('tx-search-input').value = '';
+          document.getElementById('tx-filter-type').value = 'all';
+          document.getElementById('tx-filter-account').value = 'all';
+          renderLedger();
+        });
+
+        // 15. TOP ACTIVE ACCOUNT SELECTOR
+        document.getElementById('active-account-select')?.addEventListener('change', (e) => {
+          state.activeAccountId = e.target.value;
+          saveState();
+          reRenderAll();
+          const acc = getAccount(state.activeAccountId);
+          showToast(`Active account switched to: ${acc.name}`, 'info');
+        });
+      }
+
+      // --- DELEGATED EVENT LISTENERS ---
+      function setupDelegatedListeners() {
+        // Receipt Modal
+        const modalReceipt = document.getElementById('modal-receipt');
+        const receiptContent = document.getElementById('receipt-details-content');
+        let currentReceiptTxId = '';
+
+        document.addEventListener('click', (e) => {
+          // Open receipt
+          const btnReceipt = e.target.closest('.btn-open-receipt');
+          if (btnReceipt) {
+            const txId = btnReceipt.getAttribute('data-tx-id');
+            const tx = state.transactions.find(t => t.id === txId);
+            if (tx && receiptContent) {
+              currentReceiptTxId = tx.id;
+              const acc = getAccount(tx.accountId);
+              receiptContent.innerHTML = `
+                <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl space-y-2">
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Reference:</span>
+                    <span class="font-mono font-bold text-slate-800 dark:text-white">${tx.id}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Timestamp:</span>
+                    <span class="font-semibold text-slate-700 dark:text-slate-200">${tx.timestamp}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Account:</span>
+                    <span class="font-semibold text-slate-700 dark:text-slate-200">${acc ? acc.name : 'N/A'}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Payment Channel:</span>
+                    <span class="font-semibold text-slate-700 dark:text-slate-200">${tx.channel || 'Apex Direct'}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Category:</span>
+                    <span class="font-semibold text-slate-700 dark:text-slate-200">${tx.category}</span>
+                  </div>
+                  <div class="border-t border-slate-200 dark:border-slate-600 pt-2 flex justify-between items-center">
+                    <span class="text-slate-400">Transaction Value:</span>
+                    <span class="text-base font-extrabold ${tx.type === 'deposit' ? 'text-emerald-600' : 'text-slate-900 dark:text-white'}">
+                      ${tx.type === 'deposit' ? '+' : '-'}${formatMoney(tx.amount)}
+                    </span>
+                  </div>
+                  <div class="flex justify-between text-[11px] text-slate-400">
+                    <span>Balance Post-Transaction:</span>
+                    <span class="font-mono">${formatMoney(tx.balanceAfter)}</span>
+                  </div>
+                </div>
+                <div class="text-[11px] text-center text-slate-400 mt-2">
+                  Digitally signed by Apex Financial Services Ledger Authority.
+                </div>
+              `;
+              modalReceipt?.classList.remove('hidden');
+            }
+          }
+
+          // Select Account Card
+          const btnSelectAcc = e.target.closest('.btn-select-account');
+          if (btnSelectAcc) {
+            const accId = btnSelectAcc.getAttribute('data-acc-id');
+            state.activeAccountId = accId;
+            saveState();
+            reRenderAll();
+            showToast(`Active account set to ${getAccount(accId).name}`, 'info');
+          }
+
+          // Toggle Freeze Account
+          const btnFreeze = e.target.closest('.btn-toggle-freeze');
+          if (btnFreeze) {
+            const accId = btnFreeze.getAttribute('data-acc-id');
+            const acc = getAccount(accId);
+            if (acc) {
+              acc.status = acc.status === 'Frozen' ? 'Active' : 'Frozen';
+              saveState();
+              reRenderAll();
+              showToast(`Account "${acc.name}" is now ${acc.status}!`, acc.status === 'Frozen' ? 'warning' : 'success');
+            }
+          }
+
+          // Open Contribute Goal Modal
+          const btnContributeGoal = e.target.closest('.btn-contribute-goal');
+          if (btnContributeGoal) {
+            const goalId = btnContributeGoal.getAttribute('data-goal-id');
+            const goal = state.goals.find(g => g.id === goalId);
+            if (goal) {
+              document.getElementById('goal-target-id').value = goal.id;
+              document.getElementById('goal-modal-title').textContent = `Contribute to: ${goal.name}`;
+              document.getElementById('modal-goal-contribute')?.classList.remove('hidden');
+            }
+          }
+        });
+
+        // Close Receipt Modal
+        document.getElementById('modal-receipt-close')?.addEventListener('click', () => {
+          modalReceipt?.classList.add('hidden');
+        });
+        document.getElementById('modal-receipt-done-btn')?.addEventListener('click', () => {
+          modalReceipt?.classList.add('hidden');
+        });
+        document.getElementById('modal-receipt-print-btn')?.addEventListener('click', () => {
+          if (currentReceiptTxId) {
+            if (navigator.clipboard) {
+              navigator.clipboard.writeText(currentReceiptTxId).catch(() => {});
+            }
+            showToast(`Copied reference ${currentReceiptTxId} to clipboard!`, 'info');
+          }
+        });
+
+        // Theme Toggle
+        document.getElementById('theme-toggle-btn')?.addEventListener('click', () => {
+          const isCurrentlyDark = document.documentElement.classList.contains('dark');
+          applyTheme(!isCurrentlyDark);
+        });
+
+        // Loan Calculator sliders
+        const loanSliders = ['loan-amount-slider', 'loan-rate-slider', 'loan-tenure-slider'];
+        loanSliders.forEach(id => {
+          document.getElementById(id)?.addEventListener('input', calculateLoanEMI);
+        });
+
+        // FD Calculator inputs
+        const fdInputs = ['fd-principal-input', 'fd-rate-input', 'fd-period-select'];
+        fdInputs.forEach(id => {
+          document.getElementById(id)?.addEventListener('input', calculateFixedDeposit);
+        });
+
+        // Chart refresh button
+        document.getElementById('chart-refresh-btn')?.addEventListener('click', () => {
+          updateCharts();
+          showToast('Analytical charts refreshed', 'info');
+        });
+      }
+
+      // --- INITIALIZATION ---
+      window.addEventListener('DOMContentLoaded', () => {
+        applyTheme(state.theme === 'dark');
+        setupTabs();
+        setupOpSubTabs();
+        setupForms();
+        setupDelegatedListeners();
+        initCharts();
+        calculateLoanEMI();
+        calculateFixedDeposit();
+        reRenderAll();
+      });
+
+    })();
+  </script>
+</body>
+</html>
